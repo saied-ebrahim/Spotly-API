@@ -1,18 +1,3 @@
-# E-commerce Express API
-
-A production-ready REST API for a simple e-commerce backend built with Express and MongoDB. Supports user auth (JWT), roles and permissions, product management with image uploads to Cloudinary, shopping carts, and orders.
-
----
-
-## Features
-
-- **Auth**: Register, login, JWT-based auth, forgot/reset password via email
-- **Roles**: `user`, `seller`, `admin` with route-level authorization
-- **Products**: Public listing, protected search, seller CRUD, Cloudinary image upload
-- **Cart**: Per-user cart with priced items and ownership checks
-- **Orders**: Create orders from cart, per-user and admin/seller visibility
-- **Error Handling**: Centralized error handler and async error capture
-- **Health Check**: `/health`
 
 ## Tech Stack
 
@@ -73,101 +58,9 @@ npm start
 
 ---
 
-## Project Structure
-
-```text
-ecommerce-express-api/
-├─ server.js
-├─ config/
-│  └─ db.js
-├─ models/
-│  ├─ User.js
-│  ├─ Product.js
-│  ├─ Cart.js
-│  └─ Order.js
-├─ middlewares/
-│  ├─ auth.js
-│  ├─ authorize.js
-│  ├─ errorHandler.js
-│  └─ upload.js
-├─ controllers/
-│  ├─ authController.js
-│  ├─ productController.js
-│  ├─ cartController.js
-│  └─ orderController.js
-├─ routes/
-│  ├─ auth.js
-│  ├─ products.js
-│  ├─ carts.js
-│  └─ orders.js
-└─ utils/
-   ├─ email.js
-   └─ token.js
-```
-
----
-
 ## API Reference
 
 Base URL: `http://localhost:5000`
-
-### Auth
-
-- POST `/auth/register`
-  - body: `{ name, email, password, role? }`
-  - returns: `{ token, user }`
-- POST `/auth/login`
-  - body: `{ email, password }`
-  - returns: `{ token, user }`
-- POST `/auth/forgot-password`
-  - body: `{ email }`
-  - returns: message (always generic)
-- POST `/auth/reset-password`
-  - body: `{ token, email, newPassword }`
-  - returns: `{ message }`
-
-### Health
-
-- GET `/health` → `{ ok: true }`
-
-### Products
-
-- GET `/products/public`
-  - query: `page=1&limit=20`
-  - returns: list of products
-- GET `/products/:id` → product by id
-- GET `/products` (auth required)
-  - query: `q=keyword&page=1&limit=20`
-  - returns: search results (text index on `name`, `sellerName`)
-- POST `/products` (auth, role: `seller` or `admin`)
-  - content-type: `multipart/form-data`
-  - fields: `name`, `description?`, `price`
-  - file: `photo`
-- PUT `/products/:id` (auth; owner or admin)
-  - content-type: `multipart/form-data`
-  - optional fields: `name`, `description`, `price`, `photo`
-- DELETE `/products/:id` (auth; owner or admin)
-- GET `/products/seller/:sellerId` (auth; same seller or admin)
-
-### Cart
-
-- GET `/carts/me` (auth) → current user cart
-- POST `/carts` (auth)
-  - body: `{ items: [{ product, quantity }] }`
-  - creates or replaces entire cart
-- PUT `/carts/:id` (auth; owner or admin)
-  - body: `{ items }` (partial replace)
-- DELETE `/carts/:id` (auth; owner or admin)
-
-### Orders
-
-- POST `/orders` (auth)
-  - creates order from the current user cart
-  - body: `{ paymentMethod: 'cod' | 'stripe' }`
-- GET `/orders/:id` (auth; owner/admin or seller who owns any product in the order)
-- GET `/orders/user/:userId` (auth; same user or admin)
-
----
 
 ## Auth & Roles
 
