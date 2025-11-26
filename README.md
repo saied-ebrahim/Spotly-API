@@ -43,11 +43,6 @@ EMAIL_SERVICE=gmail
 EMAIL_USER=your-email@example.com
 EMAIL_PASS=your-app-password
 
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-key
-CLOUDINARY_API_SECRET=your-secret
-```
 
 ### Run
 
