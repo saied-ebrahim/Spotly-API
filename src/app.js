@@ -1,10 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const path = require('path')
-const rfs = require('rotating-file-stream') // version 2.x
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
 
-const uploadRoutes = require('./routes/upload-routes');
+import uploadRoutes from './routes/upload-routes.js';
 
 
 
@@ -45,4 +43,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+export default app;

@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 // Build transporter using either a well-known service or custom SMTP host/port
 const transporter = nodemailer.createTransport(
@@ -52,4 +52,4 @@ async function sendEmail(to, subject, html) {
     }
 }
 
-module.exports = { sendEmail };
+export { sendEmail };

@@ -1,7 +1,7 @@
-const getSignedFileUrl = require('../utils/getSignedFileUrl');
+import getSignedFileUrl from '../utils/getSignedFileUrl.js';
 
 // Handle file upload response
-exports.handleUpload = (req, res) => {
+export const handleUpload = (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
   }
@@ -13,7 +13,7 @@ exports.handleUpload = (req, res) => {
 };
 
 // Generate signed URL for a stored file
-exports.getFileSignedUrl = async (req, res) => {
+export const getFileSignedUrl = async (req, res) => {
   try {
     const { key } = req.params;
 

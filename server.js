@@ -1,11 +1,10 @@
-
 // Swagger
-// const swaggerUi = require('swagger-ui-express');
-// const swaggerSpec = require('./config/swagger');
-require('dotenv').config(); 
-require('express-async-errors'); // auto-catch async errors
-const app = require('./src/app'); 
-const connectDB = require('./src/config/db'); 
+// import swaggerUi from 'swagger-ui-express';
+// import swaggerSpec from './config/swagger.js';
+import 'dotenv/config';
+import 'express-async-errors'; // auto-catch async errors
+import app from './src/app.js';
+import connectDB from './src/config/db.js'; 
 
 
 connectDB();

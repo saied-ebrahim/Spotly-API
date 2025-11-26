@@ -1,6 +1,6 @@
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const s3Client = require('../config/r2Client');
+import multer from 'multer';
+import multerS3 from 'multer-s3';
+import s3Client from '../config/r2Client.js';
 
 // Multer storage configured to upload directly to Cloudflare R2 (S3-compatible)
 const upload = multer({
@@ -18,5 +18,5 @@ const upload = multer({
   }),
 });
 
-module.exports = upload;
+export default upload;
 
