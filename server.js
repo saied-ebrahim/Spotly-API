@@ -6,12 +6,18 @@ import "express-async-errors"; // auto-catch async errors
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
 
-connectDB();
-const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`App running on port ${PORT}... 🚀`);
+
+const PORT = process.env.PORT || 5000;
+connectDB().then(() => {
+  app.listen(PORT, () => console.log(`Server running on port http://localhost:${PORT}`));
+}).catch(err => {
+  console.error('Failed to connect DB', err);
+  process.exit(1);
 });
+
+
+
 
 // 2. التعامل مع الأخطاء غير المتوقعة (Uncaught Exceptions)
 process.on("uncaughtException", (err) => {

@@ -6,6 +6,7 @@ import errorHandler from "./middlewares/errors-middleware.js";
 
 // ! App
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 if (process.env.NODE_ENV === "development") {
