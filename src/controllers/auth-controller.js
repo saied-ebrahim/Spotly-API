@@ -1,6 +1,7 @@
-import { signUpService, loginService } from "../services/auth-service.js";
+import { signUpService, loginService, refreshTokenService } from "../services/auth-service.js";
 
 const signUpController = signUpService;
 const loginController = loginService;
+const refreshTokenController = refreshTokenService;
 
-export { signUpController, loginController };
+export { signUpController, loginController, refreshTokenController };
