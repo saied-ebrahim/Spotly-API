@@ -1,6 +1,11 @@
-module.exports = (err, req, res, next) => {
-    console.error(err);
-    const status = err.status || 500;
-    res.status(status).json({ message: err.message || 'Server Error' });
-  };
-  
+const errMiddleware = (err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  res.status(err.statusCode).json({
+    statusCode: err.statusCode,
+    status: err.status,
+    message: err.message,
+    stack: err.stack,
+  });
+};
+
+export default errMiddleware;
