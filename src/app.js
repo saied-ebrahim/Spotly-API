@@ -4,9 +4,10 @@ import morgan from 'morgan';
 
 import uploadRoutes from './routes/upload-routes.js';
 
-
+import errorHandler from './middlewares/errors-middleware.js';
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 if (process.env.NODE_ENV === 'development') {
@@ -25,6 +26,7 @@ apiV1.use('/', uploadRoutes);
 app.use('/api/v1', apiV1);
 
 // --- Global Error Handling ---
+app.use(errorHandler);
 
 // 6. التعامل مع المسارات الغلط (404)
 app.all('*', (req, res, next) => {
@@ -34,13 +36,5 @@ app.all('*', (req, res, next) => {
   });
 });
 
-// 7. التعامل مع أخطاء السيرفر (Global Error Handler)
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  res.status(statusCode).json({
-    status: 'error',
-    message: err.message || 'Internal Server Error',
-  });
-});
 
 export default app;
