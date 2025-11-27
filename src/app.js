@@ -7,6 +7,7 @@ import uploadRoutes from "./routes/upload-routes.js";
 import authRoutes from "./routes/auth-routes.js";
 import errorHandler from "./middlewares/errors-middleware.js";
 
+// ! App
 const app = express();
 
 app.use(cors());
@@ -15,6 +16,7 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
 // ! API v1 Router
 const apiV1 = express.Router();
 app.use("/api/v1", apiV1);
