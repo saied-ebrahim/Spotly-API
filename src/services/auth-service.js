@@ -9,7 +9,14 @@ import userModel from "../models/user-model.js";
 // ! @route  POST /api/v1/auth/signup
 // ! @params { firstName, lastName, gender, address, email, password }
 const signUpService = expressAsyncHandler(async (req, res, next) => {
-  const { firstName, lastName, gender, city, country, state, email, password } = req.body;
+  const {
+    firstName,
+    lastName,
+    gender,
+    address: { city, country, state },
+    email,
+    password,
+  } = req.body;
   if (!firstName || !lastName || !gender || !city || !country || !state || !email || !password) {
     return next(new AppError("Please provide all required fields", 400));
   }
