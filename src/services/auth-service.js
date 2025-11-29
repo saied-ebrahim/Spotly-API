@@ -105,7 +105,80 @@ const refreshTokenService = expressAsyncHandler(async (req, res, next) => {
   await user.save();
 
   res.cookie("token", refreshToken, { httpOnly: true, secure: true, sameSite: "strict", maxAge: 1000 * 60 * 60 * 24 * 7 });
-
   res.status(200).json({ message: "Token refreshed successfully", accessToken });
 });
-export { signUpService, loginService, refreshTokenService };
+
+// ! @desc   Logout from current device
+// ! @route  POST /api/v1/auth/logout
+// ! @params { deviceID }
+const logoutService = expressAsyncHandler(async (req, res, next) => {
+  const { deviceID } = req.body;
+  const { token } = req.cookies;
+
+  if (!deviceID || !token) {
+    return next(new AppError("Missing required credentials", 400));
+  }
+
+  let decode;
+  try {
+    decode = jwt.verify(token, process.env.REFRESH_SECRET);
+  } catch (err) {
+    res.clearCookie("token");
+    return next(new AppError("Invalid or expired token", 401));
+  }
+
+  const user = await userModel.findOne({ email: decode.email });
+  if (!user) {
+    res.clearCookie("token");
+    return next(new AppError("Unauthorized user", 401));
+  }
+
+  const targetDevice = user.refreshTokens.find((t) => t.deviceID === deviceID);
+  if (!targetDevice) {
+    res.clearCookie("token");
+    return next(new AppError("Device not found", 401));
+  }
+
+  const isValidToken = await bcrypt.compare(token, targetDevice.token);
+  if (!isValidToken) {
+    user.refreshTokens = user.refreshTokens.filter((t) => t.deviceID !== deviceID);
+    await user.save();
+    res.clearCookie("token");
+    return next(new AppError("Invalid token", 401));
+  }
+
+  await userModel.findOneAndUpdate({ email: decode.email, "refreshTokens.deviceID": deviceID }, { $pull: { refreshTokens: { deviceID } } });
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logout successful" });
+});
+
+// ! @desc   Logout from all devices
+// ! @route  POST /api/v1/auth/logoutAll
+// ! @params { deviceID }
+const logoutAllService = expressAsyncHandler(async (req, res, next) => {
+  const { token } = req.cookies;
+
+  if (!token) {
+    return next(new AppError("Missing required credentials", 400));
+  }
+
+  let decode;
+  try {
+    decode = jwt.verify(token, process.env.REFRESH_SECRET);
+  } catch (err) {
+    res.clearCookie("token");
+    return next(new AppError("Invalid or expired token", 401));
+  }
+
+  const user = await userModel.findOne({ email: decode.email });
+  if (!user) {
+    res.clearCookie("token");
+    return next(new AppError("Unauthorized user", 401));
+  }
+
+  await userModel.findOneAndUpdate({ email: decode.email }, { $set: { refreshTokens: [] } });
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logout successful" });
+});
+
+export { signUpService, loginService, refreshTokenService, logoutService, logoutAllService };
