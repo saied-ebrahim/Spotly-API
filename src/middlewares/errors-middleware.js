@@ -1,11 +1,20 @@
 const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
-  res.status(err.statusCode).json({
+  err.status = err.status || "error";
+
+  // Send error response
+  const errorResponse = {
     statusCode: err.statusCode,
     status: err.status,
     message: err.message,
-    stack: err.stack,
-  });
+  };
+
+  // Only send stack trace in development
+  if (process.env.NODE_ENV === "development") {
+    errorResponse.stack = err.stack;
+  }
+
+  res.status(err.statusCode).json(errorResponse);
 };
 
 export default errorHandler;
