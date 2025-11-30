@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 import AppError from "../utils/AppError.js";
 import userModel from "../models/user-model.js";
+import generateToken from "../utils/genreateToken.js";
 
 // ! @desc   Sign up new user
 // ! @route  POST /api/v1/auth/signup
@@ -39,9 +40,7 @@ const loginService = expressAsyncHandler(async (req, res, next) => {
   const checkPassword = await user.comparePassword(password);
   if (!checkPassword) return next(new AppError("Wrong Password", 401));
 
-  const accessToken = jwt.sign({ id: user._id, email, name: `${user.firstName} ${user.lastName}` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || "1d" });
-  const refreshToken = jwt.sign({ id: user._id, email, name: `${user.firstName} ${user.lastName}` }, process.env.REFRESH_SECRET, { expiresIn: process.env.REFRESH_EXPIRES || "7d" });
-
+  const { accessToken, refreshToken } = generateToken(user);
   const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
   const device = user.refreshTokens.find((token) => token.deviceID === deviceID);
@@ -96,9 +95,7 @@ const refreshTokenService = expressAsyncHandler(async (req, res, next) => {
     res.clearCookie("token");
     return next(new AppError("Token reuse detected. All sessions revoked.", 403));
   }
-
-  const accessToken = jwt.sign({ id: user._id, email: user.email, name: `${user.firstName} ${user.lastName}` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || "15m" });
-  const refreshToken = jwt.sign({ id: user._id, email: user.email, name: `${user.firstName} ${user.lastName}` }, process.env.REFRESH_SECRET, { expiresIn: process.env.REFRESH_EXPIRES || "7d" });
+  const { accessToken, refreshToken } = generateToken(user);
   const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
   user.refreshTokens = user.refreshTokens.filter((t) => t.deviceID !== deviceID).concat({ deviceID, token: hashedRefreshToken });
