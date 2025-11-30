@@ -18,11 +18,12 @@ import {
   logoutSchema,
 } from "../validations/auth-validation.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
+import { authorizeAdmin } from "../middlewares/authorize-admin-middleware.js";
 
 const router = express.Router();
 
 // Public routes
-router.post("/signUp", validateMiddleware(signUpSchema), signUpController);
+router.post("/signup", validateMiddleware(signUpSchema), signUpController);
 router.post("/login", validateMiddleware(loginSchema), loginController);
 router.post("/refreshToken", validateMiddleware(refreshTokenSchema), refreshTokenController);
 router.post("/logout", validateMiddleware(logoutSchema), logoutController);
@@ -31,6 +32,6 @@ router.post("/logoutAll", logoutAllController);
 // Protected routes (require authentication)
 router.get("/me", authMiddleware, getMeController);
 router.get("/profile/:id", authMiddleware, getUserProfileController);
-router.get("/users", authMiddleware, getAllUsersController); // Dashboard - Get all users
+router.get("/users", authMiddleware, authorizeAdmin, getAllUsersController); // Dashboard - Admin only
 
 export default router;

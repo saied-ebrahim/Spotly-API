@@ -13,13 +13,30 @@ export const createEvent = expressAsyncHandler(async (req, res, next) => {
 });
 
 /**
- * @desc   Get all events
+ * @desc   Get all events with pagination and filtering
  * @route  GET /api/v1/events
  * @access Public
+ * @query  page, limit, search, category, tag, sort, order
  */
 export const getAllEvents = expressAsyncHandler(async (req, res, next) => {
-  const events = await eventService.getAllEvents();
-  res.status(200).json({ status: "success", results: events.length, data: { events } });
+  const { page, limit, search, category, tag, sort, order } = req.query;
+  
+  const result = await eventService.getAllEvents({
+    page: page ? parseInt(page) : 1,
+    limit: limit ? parseInt(limit) : 10,
+    search: search || "",
+    category: category || "",
+    tag: tag || "",
+    sort: sort || "createdAt",
+    order: order || "desc",
+  });
+
+  res.status(200).json({
+    status: "success",
+    results: result.events.length,
+    pagination: result.pagination,
+    data: { events: result.events },
+  });
 });
 
 /**

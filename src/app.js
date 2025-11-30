@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errors-middleware.js";
 import uploadRoutes from "./routes/upload-routes.js";
 import eventsRoutes from "./routes/events-routes.js";
@@ -13,6 +14,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }

@@ -65,7 +65,11 @@ export const refreshTokenController = expressAsyncHandler(async (req, res, next)
   const { token } = req.cookies;
 
   if (!deviceID) {
-    throw new AppError("Please provide device ID", 400);
+    throw new AppError("Device ID is required", 400);
+  }
+
+  if (!token) {
+    throw new AppError("Refresh token is missing. Please log in again.", 401);
   }
 
   try {
@@ -87,7 +91,7 @@ export const refreshTokenController = expressAsyncHandler(async (req, res, next)
       data: { accessToken },
     });
   } catch (error) {
-    // Clear cookie on any error
+    // Clear cookie on any error for security
     res.clearCookie("token");
     throw error;
   }
@@ -103,11 +107,11 @@ export const logoutController = expressAsyncHandler(async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!deviceID) {
-    throw new AppError("Please provide device ID", 400);
+    throw new AppError("Device ID is required", 400);
   }
 
   if (!token) {
-    throw new AppError("Missing required credentials", 400);
+    throw new AppError("Refresh token is missing. Please log in first.", 401);
   }
 
   try {
@@ -126,7 +130,7 @@ export const logoutController = expressAsyncHandler(async (req, res, next) => {
       message: "Logout successful",
     });
   } catch (error) {
-    // Clear cookie on any error
+    // Clear cookie on any error for security
     res.clearCookie("token");
     throw error;
   }
@@ -136,12 +140,13 @@ export const logoutController = expressAsyncHandler(async (req, res, next) => {
  * @desc   Logout from all devices
  * @route  POST /api/v1/auth/logoutAll
  * @access Public
+ * @note   No validation needed - relies on refresh token from cookie
  */
 export const logoutAllController = expressAsyncHandler(async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) {
-    throw new AppError("Missing required credentials", 400);
+    throw new AppError("Missing required credentials. Please log in first.", 401);
   }
 
   try {
@@ -156,7 +161,7 @@ export const logoutAllController = expressAsyncHandler(async (req, res, next) =>
       message: "Logout from all devices successful",
     });
   } catch (error) {
-    // Clear cookie on any error
+    // Clear cookie on any error for security
     res.clearCookie("token");
     throw error;
   }
@@ -184,6 +189,13 @@ export const getMeController = expressAsyncHandler(async (req, res, next) => {
  */
 export const getUserProfileController = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
+
+  // Validate MongoDB ObjectId format
+  const mongoose = (await import("mongoose")).default;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid user ID format", 400);
+  }
+
   const user = await getUserProfileService(id);
 
   res.status(200).json({
@@ -195,12 +207,21 @@ export const getUserProfileController = expressAsyncHandler(async (req, res, nex
 /**
  * @desc   Get all users for dashboard
  * @route  GET /api/v1/auth/users
- * @access Protected (Dashboard)
+ * @access Protected (Admin only)
+ * @query  page, limit, search
  */
 export const getAllUsersController = expressAsyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const search = req.query.search || "";
+
+  // Validate pagination parameters
+  if (page < 1) {
+    throw new AppError("Page number must be greater than 0", 400);
+  }
+  if (limit < 1 || limit > 100) {
+    throw new AppError("Limit must be between 1 and 100", 400);
+  }
 
   const { users, pagination } = await getAllUsersService({
     page,

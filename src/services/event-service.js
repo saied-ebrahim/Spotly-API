@@ -45,12 +45,74 @@ export const createEvent = async (eventData, user) => {
 };
 
 /**
- * Get all events
- * @returns {Promise<Array>} Array of events
+ * Get all events with pagination, filtering, and sorting
+ * @param {Object} options - Query options
+ * @param {number} options.page - Page number (default: 1)
+ * @param {number} options.limit - Items per page (default: 10)
+ * @param {string} options.search - Search term for title or description
+ * @param {string} options.category - Filter by category ID
+ * @param {string} options.tag - Filter by tag ID
+ * @param {string} options.sort - Sort field (default: createdAt)
+ * @param {string} options.order - Sort order: 'asc' or 'desc' (default: desc)
+ * @returns {Promise<Object>} Events data with pagination info
  */
-export const getAllEvents = async () => {
-  const events = await Event.find().populate("organizer").populate("category").populate("tags");
-  return events;
+export const getAllEvents = async ({
+  page = 1,
+  limit = 10,
+  search = "",
+  category = "",
+  tag = "",
+  sort = "createdAt",
+  order = "desc",
+} = {}) => {
+  const skip = (page - 1) * limit;
+  const sortOrder = order === "asc" ? 1 : -1;
+
+  // Build query
+  const query = {};
+
+  // Search by title or description
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // Filter by category
+  if (category) {
+    query.category = category;
+  }
+
+  // Filter by tag
+  if (tag) {
+    query.tags = tag;
+  }
+
+  // Get events with pagination
+  const events = await Event.find(query)
+    .populate("organizer")
+    .populate("category")
+    .populate("tags")
+    .sort({ [sort]: sortOrder })
+    .skip(skip)
+    .limit(limit);
+
+  // Get total count for pagination
+  const total = await Event.countDocuments(query);
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    events,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalEvents: total,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      limit,
+    },
+  };
 };
 
 /**
@@ -78,7 +140,10 @@ export const getEventById = async (eventId) => {
  * @returns {Promise<Object>} Updated event
  */
 export const updateEvent = async (eventId, updateData) => {
-  const event = await Event.findByIdAndUpdate(eventId, updateData, {
+  // Remove organizer from updateData (cannot be changed)
+  const { organizer, ...restUpdateData } = updateData;
+
+  const event = await Event.findByIdAndUpdate(eventId, restUpdateData, {
     new: true,
     runValidators: true,
   })
