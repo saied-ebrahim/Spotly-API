@@ -9,6 +9,9 @@ import authRoutes from "./routes/auth-routes.js";
 import categoryRoutes from "./routes/category-routes.js";
 import tagRoutes from "./routes/tag-routes.js";
 import organizerRoutes from "./routes/organizer-routes.js";
+// ? Swagger Docs
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './config/swagger.js';
 // ! App
 const app = express();
 
@@ -34,6 +37,9 @@ apiV1.use("/organizers", organizerRoutes);
 apiV1.use("/upload", uploadRoutes);
 apiV1.use("/events", eventsRoutes);
 
+
+// ? Swagger Docs
+apiV1.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ! 404
 app.all("*", (req, res) => {

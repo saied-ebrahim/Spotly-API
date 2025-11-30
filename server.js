@@ -1,6 +1,4 @@
-// Swagger
-// import swaggerUi from 'swagger-ui-express';
-// import swaggerSpec from './config/swagger.js';
+
 import "dotenv/config";
 import "express-async-errors"; // auto-catch async errors
 import app from "./src/app.js";
