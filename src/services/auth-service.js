@@ -29,11 +29,13 @@ export const loginService = async (loginData) => {
   }
 
   const user = await userModel.findOne({ email });
+  console.log("from login user", user);
   if (!user) {
     throw new AppError("Invalid email", 401);
   }
 
   const checkPassword = await user.comparePassword(password);
+  console.log("from login checkPassword", checkPassword);
   if (!checkPassword) {
     throw new AppError("Invalid password", 401);
   }
