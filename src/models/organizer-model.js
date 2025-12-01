@@ -8,4 +8,7 @@ const OrganizerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Prevent duplicate organizer entries (same user organizing same event)
+OrganizerSchema.index({ userID: 1, eventID: 1 }, { unique: true });
+
 export default mongoose.model("Organizer", OrganizerSchema);

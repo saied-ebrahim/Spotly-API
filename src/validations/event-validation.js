@@ -64,13 +64,13 @@ export const createEventValidation = Joi.object({
         "any.required": "Location address is required",
       }),
     latitude: Joi.number()
-      .required()
+      .optional()
       .messages({
         "number.base": "Location latitude must be a number",
         "any.required": "Location latitude is required",
       }),
     longitude: Joi.number()
-      .required()
+        .optional()
       .messages({
         "number.base": "Location longitude must be a number",
         "any.required": "Location longitude is required",
