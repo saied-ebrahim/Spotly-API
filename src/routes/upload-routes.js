@@ -9,7 +9,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/v1/upload/upload:
+ * /api/v1/upload:
  *   post:
  *     summary: Upload a file
  *     tags: [Upload]
@@ -37,21 +37,27 @@ const router = express.Router();
  *                 status:
  *                   type: string
  *                   example: "success"
+ *                 message:
+ *                   type: string
+ *                   example: "Uploaded successfully!"
  *                 data:
  *                   type: object
  *                   properties:
- *                     fileUrl:
- *                       type: string
- *                       example: "https://example.com/uploads/file.jpg"
  *                     key:
  *                       type: string
- *                       example: "uploads/file.jpg"
+ *                       description: File key for future reference
+ *                       example: "file-1234567890-123456789-image.jpg"
+ *                     url:
+ *                       type: string
+ *                       format: uri
+ *                       description: Signed URL that can be used directly (valid for 1 year)
+ *                       example: "https://r2.example.com/file-1234567890-123456789-image.jpg?signature=..."
  *       400:
  *         description: No file provided or invalid file type
  *       500:
  *         description: Upload error
  */
-router.post('/upload', upload.single('file'), handleUpload);
+router.post('/', upload.single('file'), handleUpload);
 
 /**
  * @swagger
