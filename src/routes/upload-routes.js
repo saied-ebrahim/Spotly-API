@@ -1,9 +1,6 @@
-import express from 'express';
-import upload from '../middlewares/upload-middleware.js';
-import {
-  handleUpload,
-  getFileSignedUrl,
-} from '../controllers/upload-controller.js';
+import express from "express";
+import upload from "../middlewares/upload-middleware.js";
+import { handleUpload, getFileSignedUrl } from "../controllers/upload-controller.js";
 
 const router = express.Router();
 
@@ -93,8 +90,6 @@ router.post('/', upload.single('file'), handleUpload);
  *       404:
  *         description: File not found
  */
-router.get('/file/:key', getFileSignedUrl);
+router.get("/file/:key", getFileSignedUrl);
 
 export default router;
-
-

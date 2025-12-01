@@ -83,4 +83,3 @@ export const updateCategoryValidation = Joi.object({
       "array.base": "Events must be an array",
     }),
 });
-

@@ -29,9 +29,7 @@ export const getFileSignedUrl = async (req, res) => {
     return res.json({ url });
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error('Error generating signed URL:', err);
-    return res.status(500).json({ error: 'Failed to generate signed URL' });
+    console.error("Error generating signed URL:", err);
+    return res.status(500).json({ error: "Failed to generate signed URL" });
   }
 };
-
-

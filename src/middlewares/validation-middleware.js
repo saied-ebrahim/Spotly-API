@@ -1,20 +1,19 @@
 import AppError from "../utils/AppError.js";
 
 const validateMiddleware = (schema) => {
-  return (req, res, next) => {
-    const validateSchema = schema.validate(req.body, {
-      abortEarly: false,
-      stripUnknown: true,
-      convert: true,
-    });
-
-    if (validateSchema.error) {
-      const errorMessages = validateSchema.error.details.map((error) => error.message);
-      return next(new AppError(`Validation Error: ${errorMessages.join(", ")}`, 400));
+  return async (req, res, next) => {
+    try {
+      const value = await schema.validateAsync(req.body, { abortEarly: false, stripUnknown: true, convert: true });
+      req.body = value;
+      req.body.title = await req.body.title;
+      next();
+    } catch (err) {
+      if (err.isJoi && err.details) {
+        const errorMessages = err.details.map((error) => error.message);
+        return next(new AppError(`Validation Error: ${[...errorMessages]}`, 400));
+      }
+      next(err);
     }
-
-    req.body = validateSchema.value;
-    next();
   };
 };
 

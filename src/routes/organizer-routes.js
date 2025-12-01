@@ -1,10 +1,5 @@
 import express from "express";
-import {
-  getAllOrganizers,
-  getOrganizerById,
-  getOrganizersByUserId,
-  getOrganizersByEventId,
-} from "../controllers/organizer-controller.js";
+import { getAllOrganizers, getOrganizersByUserId, getOrganizersByEventId } from "../controllers/organizer-controller.js";
 
 const router = express.Router();
 
@@ -132,40 +127,4 @@ router.get("/user/:userId", getOrganizersByUserId);
  */
 router.get("/event/:eventId", getOrganizersByEventId);
 
-/**
- * @swagger
- * /api/v1/organizers/{id}:
- *   get:
- *     summary: Get organizer by ID
- *     tags: [Organizers]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Organizer ID
- *         example: "507f1f77bcf86cd799439011"
- *     responses:
- *       200:
- *         description: Organizer details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "success"
- *                 data:
- *                   type: object
- *                   properties:
- *                     organizer:
- *                       type: object
- *       404:
- *         description: Organizer not found
- */
-router.get("/:id", getOrganizerById);
-
 export default router;
-
