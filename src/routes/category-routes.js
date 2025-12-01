@@ -37,6 +37,9 @@ const router = express.Router();
  *                             type: string
  *                           description:
  *                             type: string
+ *                           image:
+ *                             type: string
+ *                             format: uri
  *                           events:
  *                             type: array
  *                             items:
@@ -96,6 +99,7 @@ router.get("/:id", getCategoryById);
  *             required:
  *               - name
  *               - description
+ *               - image
  *             properties:
  *               name:
  *                 type: string
@@ -103,6 +107,11 @@ router.get("/:id", getCategoryById);
  *               description:
  *                 type: string
  *                 example: "All music-related events"
+ *               image:
+ *                 type: string
+ *                 format: uri
+ *                 description: Category image URL
+ *                 example: "https://example.com/images/music-category.jpg"
  *               events:
  *                 type: array
  *                 items:
@@ -161,6 +170,11 @@ router.post("/", authMiddleware, validateMiddleware(createCategoryValidation), c
  *               description:
  *                 type: string
  *                 example: "All music-related events"
+ *               image:
+ *                 type: string
+ *                 format: uri
+ *                 description: Category image URL
+ *                 example: "https://example.com/images/music-category.jpg"
  *               events:
  *                 type: array
  *                 items:

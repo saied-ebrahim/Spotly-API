@@ -10,8 +10,8 @@ const EventSchema = new mongoose.Schema(
       country: { type: String, required: [true, "Event country is required"] },
       city: { type: String, required: [true, "Event city is required"] },
       address: { type: String, required: [true, "Event address is required"] },
-      latitude: { type: Number, required: [true, "Event latitude is required"] },
-      longitude: { type: Number, required: [true, "Event longitude is required"] },
+      latitude: { type: Number, nullable: true, default: null, },
+      longitude: { type: Number, nullable: true, default: null, },
     },
     media: [{ mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } }],
     analytics: {

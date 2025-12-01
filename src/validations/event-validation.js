@@ -59,6 +59,45 @@ export const createEventValidation = Joi.object({
       "number.base": "Location longitude must be a number",
       "any.required": "Location longitude is required",
     }),
+
+  // Location
+  location: Joi.object({
+    country: Joi.string()
+      .required()
+      .trim()
+      .messages({
+        "string.base": "Location country must be a string",
+        "string.empty": "Location country is required",
+        "any.required": "Location country is required",
+      }),
+    city: Joi.string()
+      .required()
+      .trim()
+      .messages({
+        "string.base": "Location city must be a string",
+        "string.empty": "Location city is required",
+        "any.required": "Location city is required",
+      }),
+    address: Joi.string()
+      .required()
+      .trim()
+      .messages({
+        "string.base": "Location address must be a string",
+        "string.empty": "Location address is required",
+        "any.required": "Location address is required",
+      }),
+    latitude: Joi.number()
+      .optional()
+      .messages({
+        "number.base": "Location latitude must be a number",
+        "any.required": "Location latitude is required",
+      }),
+    longitude: Joi.number()
+        .optional()
+      .messages({
+        "number.base": "Location longitude must be a number",
+        "any.required": "Location longitude is required",
+      }),
   })
     .required()
     .messages({
