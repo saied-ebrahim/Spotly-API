@@ -1,9 +1,6 @@
-import express from 'express';
-import upload from '../middlewares/upload-middleware.js';
-import {
-  handleUpload,
-  getFileSignedUrl,
-} from '../controllers/upload-controller.js';
+import express from "express";
+import upload from "../middlewares/upload-middleware.js";
+import { handleUpload, getFileSignedUrl } from "../controllers/upload-controller.js";
 
 const router = express.Router();
 
@@ -51,7 +48,7 @@ const router = express.Router();
  *       500:
  *         description: Upload error
  */
-router.post('/upload', upload.single('file'), handleUpload);
+router.post("/upload", upload.single("file"), handleUpload);
 
 /**
  * @swagger
@@ -87,8 +84,6 @@ router.post('/upload', upload.single('file'), handleUpload);
  *       404:
  *         description: File not found
  */
-router.get('/file/:key', getFileSignedUrl);
+router.get("/file/:key", getFileSignedUrl);
 
 export default router;
-
-

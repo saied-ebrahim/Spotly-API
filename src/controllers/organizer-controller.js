@@ -13,16 +13,6 @@ export const getAllOrganizers = expressAsyncHandler(async (req, res, next) => {
 });
 
 /**
- * @desc   Get organizer by ID
- * @route  GET /api/v1/organizers/:id
- * @access Public
- */
-export const getOrganizerById = expressAsyncHandler(async (req, res, next) => {
-  const organizer = await organizerService.getOrganizerById(req.params.id);
-  res.status(200).json({ status: "success", data: { organizer } });
-});
-
-/**
  * @desc   Get organizers by user ID
  * @route  GET /api/v1/organizers/user/:userId
  * @access Public
@@ -41,4 +31,3 @@ export const getOrganizersByEventId = expressAsyncHandler(async (req, res, next)
   const organizers = await organizerService.getOrganizersByEventId(req.params.eventId);
   res.status(200).json({ status: "success", results: organizers.length, data: { organizers } });
 });
-
