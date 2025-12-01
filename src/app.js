@@ -1,17 +1,24 @@
+// ? Packages
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+
+// ? Middlewares
 import errorHandler from "./middlewares/errors-middleware.js";
-import uploadRoutes from "./routes/upload-routes.js";
-import eventsRoutes from "./routes/events-routes.js";
+
+// ? Routes
 import authRoutes from "./routes/auth-routes.js";
+import organizerRoutes from "./routes/organizer-routes.js";
+import eventsRoutes from "./routes/events-routes.js";
 import categoryRoutes from "./routes/category-routes.js";
 import tagRoutes from "./routes/tag-routes.js";
-import organizerRoutes from "./routes/organizer-routes.js";
+import uploadRoutes from "./routes/upload-routes.js";
+
 // ? Swagger Docs
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger.js';
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
+
 // ! App
 const app = express();
 
@@ -27,16 +34,15 @@ const apiV1 = express.Router();
 app.use("/api/v1", apiV1);
 
 // ! Routes
-// apiV1.use("/", (_, res) => {
-//   res.json({ message: "Welcome to Spotly API" });
-// });
+apiV1.get("/", (_, res) => {
+  res.json({ message: "Welcome to Spotly API" });
+});
 apiV1.use("/auth", authRoutes);
+apiV1.use("/organizers", organizerRoutes);
+apiV1.use("/events", eventsRoutes);
 apiV1.use("/categories", categoryRoutes);
 apiV1.use("/tags", tagRoutes);
-apiV1.use("/organizers", organizerRoutes);
 apiV1.use("/upload", uploadRoutes);
-apiV1.use("/events", eventsRoutes);
-
 
 // ? Swagger Docs
 apiV1.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  createTag,
-  getAllTags,
-  getTagById,
-  updateTag,
-  deleteTag,
-} from "../controllers/tag-controller.js";
+import { createTag, getAllTags, getTagById, updateTag, deleteTag } from "../controllers/tag-controller.js";
 import validateMiddleware from "../middlewares/validation-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 import { createTagValidation, updateTagValidation } from "../validations/tag-validation.js";
@@ -211,4 +205,3 @@ router.patch("/:id", authMiddleware, validateMiddleware(updateTagValidation), up
 router.delete("/:id", authMiddleware, deleteTag);
 
 export default router;
-

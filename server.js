@@ -1,10 +1,7 @@
-
 import "dotenv/config";
 import "express-async-errors"; // auto-catch async errors
 import app from "./src/app.js";
 import connectDB from "./src/config/db.js";
-
-
 
 const PORT = process.env.PORT || 5000;
 

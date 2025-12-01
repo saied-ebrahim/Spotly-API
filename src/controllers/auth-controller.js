@@ -1,14 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
-import {
-  signUpService,
-  loginService,
-  refreshTokenService,
-  logoutService,
-  logoutAllService,
-  getUserProfileService,
-  getAllUsersService,
-} from "../services/auth-service.js";
-import { verifyRefreshToken } from "../utils/verifyRefreshToken.js";
+import { signUpService, loginService, refreshTokenService, logoutService, logoutAllService, getUserProfileService, getAllUsersService } from "../services/auth-service.js";
+import verifyToken from "../utils/verifyRefreshToken.js";
 import { getCookieOptions } from "../utils/constants.js";
 import AppError from "../utils/AppError.js";
 
@@ -17,15 +9,10 @@ import AppError from "../utils/AppError.js";
  * @route  POST /api/v1/auth/signup
  * @access Public
  */
-export const signUpController = expressAsyncHandler(async (req, res, next) => {
+export const signUpController = expressAsyncHandler(async (req, res) => {
   const userData = req.body;
-  const user = await signUpService(userData);
-
-  res.status(201).json({
-    status: "success",
-    message: "Registration successful",
-    data: { user },
-  });
+  await signUpService(userData);
+  res.status(201).json({ message: "Registration successful" });
 });
 
 /**
@@ -33,26 +20,11 @@ export const signUpController = expressAsyncHandler(async (req, res, next) => {
  * @route  POST /api/v1/auth/login
  * @access Public
  */
-export const loginController = expressAsyncHandler(async (req, res, next) => {
-  const { email, password, deviceID } = req.body;
-
-  const { user, accessToken, refreshToken } = await loginService({
-    email,
-    password,
-    deviceID,
-  });
-
-  // Set refresh token in cookie
+export const loginController = expressAsyncHandler(async (req, res) => {
+  const loginData = req.body;
+  const { accessToken, refreshToken } = await loginService(loginData);
   res.cookie("token", refreshToken, getCookieOptions());
-
-  res.status(200).json({
-    status: "success",
-    message: "Login successful",
-    data: {
-      user,
-      accessToken,
-    },
-  });
+  res.status(200).json({ message: "Login successful", token: accessToken });
 });
 
 /**
@@ -60,7 +32,7 @@ export const loginController = expressAsyncHandler(async (req, res, next) => {
  * @route  POST /api/v1/auth/refreshToken
  * @access Public
  */
-export const refreshTokenController = expressAsyncHandler(async (req, res, next) => {
+export const refreshTokenController = expressAsyncHandler(async (req, res) => {
   const { deviceID } = req.body;
   const { token } = req.cookies;
 
@@ -73,25 +45,11 @@ export const refreshTokenController = expressAsyncHandler(async (req, res, next)
   }
 
   try {
-    // Verify refresh token
-    const decoded = verifyRefreshToken(token);
-
-    // Get raw token for comparison
-    const { accessToken, refreshToken } = await refreshTokenService({
-      refreshToken: { ...decoded, rawToken: token },
-      deviceID,
-    });
-
-    // Set new refresh token in cookie
+    const decoded = verifyToken(token, process.env.REFRESH_SECRET);
+    const { accessToken, refreshToken } = await refreshTokenService({ refreshToken: { ...decoded, rawToken: token }, deviceID });
     res.cookie("token", refreshToken, getCookieOptions());
-
-    res.status(200).json({
-      status: "success",
-      message: "Token refreshed successfully",
-      data: { accessToken },
-    });
+    res.status(200).json({ message: "Token refreshed successfully", token: accessToken });
   } catch (error) {
-    // Clear cookie on any error for security
     res.clearCookie("token");
     throw error;
   }
@@ -102,7 +60,7 @@ export const refreshTokenController = expressAsyncHandler(async (req, res, next)
  * @route  POST /api/v1/auth/logout
  * @access Public
  */
-export const logoutController = expressAsyncHandler(async (req, res, next) => {
+export const logoutController = expressAsyncHandler(async (req, res) => {
   const { deviceID } = req.body;
   const { token } = req.cookies;
 
@@ -115,22 +73,14 @@ export const logoutController = expressAsyncHandler(async (req, res, next) => {
   }
 
   try {
-    // Verify refresh token
-    const decoded = verifyRefreshToken(token);
+    const decoded = verifyToken(token, process.env.REFRESH_SECRET);
 
-    await logoutService({
-      userEmail: decoded.email,
-      deviceID,
-      refreshToken: token,
-    });
+    await logoutService({ userEmail: decoded.email, deviceID, refreshToken: token });
 
     res.clearCookie("token");
-    res.status(200).json({
-      status: "success",
-      message: "Logout successful",
-    });
+    res.status(200).json({ message: "Logout successful" });
   } catch (error) {
-    // Clear cookie on any error for security
+    console.log(error);
     res.clearCookie("token");
     throw error;
   }
@@ -140,9 +90,8 @@ export const logoutController = expressAsyncHandler(async (req, res, next) => {
  * @desc   Logout from all devices
  * @route  POST /api/v1/auth/logoutAll
  * @access Public
- * @note   No validation needed - relies on refresh token from cookie
  */
-export const logoutAllController = expressAsyncHandler(async (req, res, next) => {
+export const logoutAllController = expressAsyncHandler(async (req, res) => {
   const { token } = req.cookies;
 
   if (!token) {
@@ -150,18 +99,11 @@ export const logoutAllController = expressAsyncHandler(async (req, res, next) =>
   }
 
   try {
-    // Verify refresh token
-    const decoded = verifyRefreshToken(token);
-
+    const decoded = verifyToken(token, process.env.REFRESH_SECRET);
     await logoutAllService(decoded.email);
-
     res.clearCookie("token");
-    res.status(200).json({
-      status: "success",
-      message: "Logout from all devices successful",
-    });
+    res.status(200).json({ message: "Logout from all devices successful" });
   } catch (error) {
-    // Clear cookie on any error for security
     res.clearCookie("token");
     throw error;
   }
@@ -172,14 +114,9 @@ export const logoutAllController = expressAsyncHandler(async (req, res, next) =>
  * @route  GET /api/v1/auth/me
  * @access Protected
  */
-export const getMeController = expressAsyncHandler(async (req, res, next) => {
-  // req.user is set by authMiddleware
+export const getMeController = expressAsyncHandler(async (req, res) => {
   const user = await getUserProfileService(req.user._id);
-
-  res.status(200).json({
-    status: "success",
-    data: { user },
-  });
+  res.status(200).json({ status: "success", data: { user } });
 });
 
 /**
@@ -187,52 +124,38 @@ export const getMeController = expressAsyncHandler(async (req, res, next) => {
  * @route  GET /api/v1/auth/profile/:id
  * @access Protected
  */
-export const getUserProfileController = expressAsyncHandler(async (req, res, next) => {
-  const { id } = req.params;
+// ! export const getUserProfileController = expressAsyncHandler(async (req, res) => {
+//   const { id } = req.params;
 
-  // Validate MongoDB ObjectId format
-  const mongoose = (await import("mongoose")).default;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new AppError("Invalid user ID format", 400);
-  }
+//   // Validate MongoDB ObjectId format
+//   const mongoose = (await import("mongoose")).default;
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     throw new AppError("Invalid user ID format", 400);
+//   }
 
-  const user = await getUserProfileService(id);
+//   const user = await getUserProfileService(id);
 
-  res.status(200).json({
-    status: "success",
-    data: { user },
-  });
-});
+//   res.status(200).json({
+//     status: "success",
+//     data: { user },
+//   });
+// });
 
 /**
- * @desc   Get all users for dashboard
+ * @desc   Get all users
  * @route  GET /api/v1/auth/users
  * @access Protected (Admin only)
  * @query  page, limit, search
  */
-export const getAllUsersController = expressAsyncHandler(async (req, res, next) => {
+export const getAllUsersController = expressAsyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || 5;
   const search = req.query.search || "";
 
-  // Validate pagination parameters
-  if (page < 1) {
-    throw new AppError("Page number must be greater than 0", 400);
-  }
-  if (limit < 1 || limit > 100) {
-    throw new AppError("Limit must be between 1 and 100", 400);
-  }
+  if (page < 1) throw new AppError("Page number must be greater than 0", 400);
+  if (limit < 1 || limit > 100) throw new AppError("Limit must be between 1 and 100", 400);
 
-  const { users, pagination } = await getAllUsersService({
-    page,
-    limit,
-    search,
-  });
+  const { users, pagination } = await getAllUsersService({ page, limit, search });
 
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    pagination,
-    data: { users },
-  });
+  res.status(200).json({ status: "success", results: users.length, pagination, data: { users } });
 });

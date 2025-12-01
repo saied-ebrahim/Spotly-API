@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  createEvent,
-  getAllEvents,
-  getEventById,
-  updateEvent,
-  deleteEvent,
-} from "../controllers/event-controller.js";
+import { createEvent, getAllEvents, getEventById, updateEvent, deleteEvent } from "../controllers/event-controller.js";
 import validateMiddleware from "../middlewares/validation-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 import { authorizeEventOrganizer } from "../middlewares/authorize-event-middleware.js";

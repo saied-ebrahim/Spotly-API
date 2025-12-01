@@ -1,24 +1,10 @@
 import express from "express";
 
-import {
-  signUpController,
-  loginController,
-  refreshTokenController,
-  logoutController,
-  logoutAllController,
-  getMeController,
-  getUserProfileController,
-  getAllUsersController,
-} from "../controllers/auth-controller.js";
+import { signUpController, loginController, refreshTokenController, logoutController, logoutAllController, getMeController, getAllUsersController } from "../controllers/auth-controller.js";
+import { loginSchema, signUpSchema, refreshTokenSchema, logoutSchema } from "../validations/auth-validation.js";
 import validateMiddleware from "../middlewares/validation-middleware.js";
-import {
-  loginSchema,
-  signUpSchema,
-  refreshTokenSchema,
-  logoutSchema,
-} from "../validations/auth-validation.js";
-import authMiddleware from "../middlewares/auth-middleware.js";
 import { authorizeAdmin } from "../middlewares/authorize-admin-middleware.js";
+import authMiddleware from "../middlewares/auth-middleware.js";
 
 const router = express.Router();
 
@@ -304,7 +290,7 @@ router.get("/me", authMiddleware, getMeController);
  *       401:
  *         description: Unauthorized
  */
-router.get("/profile/:id", authMiddleware, getUserProfileController);
+// router.get("/profile/:id", authMiddleware, getUserProfileController);
 
 /**
  * @swagger
@@ -337,6 +323,6 @@ router.get("/profile/:id", authMiddleware, getUserProfileController);
  *       403:
  *         description: Forbidden - Admin access required
  */
-router.get("/users", authMiddleware, authorizeAdmin, getAllUsersController); // Dashboard - Admin only
+router.get("/users", authMiddleware, authorizeAdmin, getAllUsersController);
 
 export default router;

@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 // Multer storage configured to upload directly to Cloudflare R2 (S3-compatible)
 dotenv.config();
 const upload = multer({
-  storage: multerS3({ 
+  storage: multerS3({
     s3: s3Client,
     bucket: process.env.R2_BUCKET_NAME,
     metadata: (req, file, cb) => {

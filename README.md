@@ -1,4 +1,3 @@
-
 ## Tech Stack
 
 - Node.js, Express
@@ -27,7 +26,7 @@ npm install
 
 Create a `.env` file in the project root:
 
-```bash
+````bash
 # Server
 PORT=5000
 
@@ -49,7 +48,7 @@ EMAIL_PASS=your-app-password
 ```bash
 npm start
 # Server: http://localhost:5000
-```
+````
 
 ---
 

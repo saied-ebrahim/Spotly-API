@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  createCategory,
-  getAllCategories,
-  getCategoryById,
-  updateCategory,
-  deleteCategory,
-} from "../controllers/category-controller.js";
+import { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory } from "../controllers/category-controller.js";
 import validateMiddleware from "../middlewares/validation-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 import { createCategoryValidation, updateCategoryValidation } from "../validations/category-validation.js";
@@ -249,5 +243,3 @@ router.patch("/:id", authMiddleware, validateMiddleware(updateCategoryValidation
 router.delete("/:id", authMiddleware, deleteCategory);
 
 export default router;
-
-
