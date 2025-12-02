@@ -15,6 +15,7 @@ import categoryRoutes from "./routes/category-routes.js";
 import tagRoutes from "./routes/tag-routes.js";
 import uploadRoutes from "./routes/upload-routes.js";
 import passwordRoutes from "./routes/password-routes.js";
+import checkoutRoutes from "./routes/checkout-routes.js";
 
 // ? Swagger Docs
 import swaggerUi from "swagger-ui-express";
@@ -22,6 +23,7 @@ import swaggerSpec from "./config/swagger.js";
 
 // ! App
 const app = express();
+app.set("view engine", "ejs");
 
 app.use(cors());
 app.use(express.json());
@@ -38,12 +40,14 @@ app.use("/api/v1", apiV1);
 apiV1.get("/", (_, res) => {
   res.json({ message: "Welcome to Spotly API" });
 });
+apiV1.get("/page", (req, res) => res.render("index.ejs"));
 apiV1.use("/auth", authRoutes);
 apiV1.use("/password", passwordRoutes);
 apiV1.use("/organizers", organizerRoutes);
 apiV1.use("/events", eventsRoutes);
 apiV1.use("/categories", categoryRoutes);
 apiV1.use("/tags", tagRoutes);
+apiV1.use("/checkout", checkoutRoutes);
 apiV1.use("/upload", uploadRoutes);
 
 // ? Swagger Docs

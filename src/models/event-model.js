@@ -10,8 +10,8 @@ const EventSchema = new mongoose.Schema(
       country: { type: String, required: [true, "Event country is required"] },
       city: { type: String, required: [true, "Event city is required"] },
       address: { type: String, required: [true, "Event address is required"] },
-      latitude: { type: Number, nullable: true, default: null, },
-      longitude: { type: Number, nullable: true, default: null, },
+      latitude: { type: Number, nullable: true, default: null },
+      longitude: { type: Number, nullable: true, default: null },
     },
     media: [{ mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } }],
     analytics: {
@@ -21,6 +21,12 @@ const EventSchema = new mongoose.Schema(
       waitingListCount: { type: Number, default: 0 },
       likes: { type: Number, default: 0 },
       dislikes: { type: Number, default: 0 },
+    },
+    ticketType: {
+      title: { type: String },
+      price: { type: Number, required: [true, "Ticket type price is required"] },
+      quantity: { type: Number, required: [true, "Ticket type quantity is required"] },
+      image: { type: String, required: [true, "Ticket type image is required"] },
     },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag", required: [true, "At least one tag is required"] }],
     category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category", required: [true, "At least one category is required"] }],

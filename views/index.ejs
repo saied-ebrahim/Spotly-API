@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoping Cart</title>
+</head>
+
+<body>
+    <h1>Shoping Cart</h1>
+    <article>
+        <h1>Iphone 17</h1>
+        <p>Price: $50</p>
+        <p>Quan: 1</p>
+    </article>
+    <article>
+        <h1>Iphone 16</h1>
+        <p>Price: $70</p>
+        <p>Quan: 3</p>
+    </article>
+    <form action="/api/v1/checkout" method="post">
+        <input type="submit" name="pay" value="Checkout">
+    </form>
+</body>
+
+</html>
