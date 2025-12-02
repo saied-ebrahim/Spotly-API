@@ -1,6 +1,5 @@
 import AppError from "../utils/AppError.js";
 
-//
 import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
 
