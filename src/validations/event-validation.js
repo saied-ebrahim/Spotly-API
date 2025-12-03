@@ -1,5 +1,6 @@
 import Joi from "joi";
 import eventModel from "../models/event-model.js";
+
 export const createEventValidation = Joi.object({
   title: Joi.string()
     .required()
@@ -33,10 +34,10 @@ export const createEventValidation = Joi.object({
     "any.required": "Time is required",
   }),
   location: Joi.object({
-    country: Joi.string().required().trim().messages({
-      "string.base": "Location country must be a string",
-      "string.empty": "Location country is required",
-      "any.required": "Location country is required",
+    district: Joi.string().required().trim().messages({
+      "string.base": "Location district must be a string",
+      "string.empty": "Location district is required",
+      "any.required": "Location district is required",
     }),
     city: Joi.string().required().trim().messages({
       "string.base": "Location city must be a string",
@@ -61,29 +62,6 @@ export const createEventValidation = Joi.object({
     .messages({
       "object.base": "Location is required",
       "any.required": "Location is required",
-    }),
-  media: Joi.array()
-    .items(
-      Joi.object({
-        mediaType: Joi.string().required().valid("image", "video").messages({
-          "string.base": "Media type must be a string",
-          "string.empty": "Media type is required",
-          "any.required": "Media type is required",
-          "any.only": "Media type must be either 'image' or 'video'",
-        }),
-        mediaUrl: Joi.string().required().trim().messages({
-          "string.base": "Media URL must be a string",
-          "string.empty": "Media URL is required",
-          "any.required": "Media URL is required",
-        }),
-      })
-    )
-    .min(1)
-    .required()
-    .messages({
-      "array.base": "Media must be an array",
-      "array.min": "At least one media item is required",
-      "any.required": "At least one media item is required",
     }),
   ticketType: Joi.object({
     title: Joi.string().required().trim().messages({
@@ -123,7 +101,19 @@ export const createEventValidation = Joi.object({
       "array.min": "At least one tag is required",
       "any.required": "At least one tag is required",
     }),
-
+  media: Joi.object({
+    mediaType: Joi.string().required().valid("image", "video").messages({
+      "string.base": "Media type must be a string",
+      "string.empty": "Media type is required",
+      "any.required": "Media type is required",
+      "any.only": "Media type must be either 'image' or 'video'",
+    }),
+    mediaUrl: Joi.string().required().trim().messages({
+      "string.base": "Media URL must be a string",
+      "string.empty": "Media URL is required",
+      "any.required": "Media URL is required",
+    }),
+  }).optional(),
   category: Joi.array()
     .items(
       Joi.string()
@@ -143,7 +133,6 @@ export const createEventValidation = Joi.object({
       "array.min": "At least one category is required",
       "any.required": "At least one category is required",
     }),
-
   organizer: Joi.string()
     .optional()
     .pattern(/^[0-9a-fA-F]{24}$/)
@@ -152,7 +141,6 @@ export const createEventValidation = Joi.object({
       "string.pattern.base": "Organizer must be a valid Mongo ID",
       "any.required": "Organizer ID is required",
     }),
-
   ticketType: Joi.object({
     price: Joi.number().required().messages({
       "number.base": "Ticket type price must be a number",
@@ -182,11 +170,10 @@ export const updateEventValidation = Joi.object({
     "string.base": "Time must be a string",
     "string.empty": "Time cannot be empty",
   }),
-
   location: Joi.object({
-    country: Joi.string().optional().trim().messages({
-      "string.base": "Location country must be a string",
-      "string.empty": "Location country cannot be empty",
+    district: Joi.string().optional().trim().messages({
+      "string.base": "Location district must be a string",
+      "string.empty": "Location district cannot be empty",
     }),
     city: Joi.string().optional().trim().messages({
       "string.base": "Location city must be a string",
@@ -203,28 +190,19 @@ export const updateEventValidation = Joi.object({
       "number.base": "Location longitude must be a number",
     }),
   }).optional(),
-
-  media: Joi.array()
-    .items(
-      Joi.object({
-        mediaType: Joi.string().required().valid("image", "video").messages({
-          "string.base": "Media type must be a string",
-          "string.empty": "Media type is required",
-          "any.required": "Media type is required",
-          "any.only": "Media type must be either 'image' or 'video'",
-        }),
-        mediaUrl: Joi.string().required().trim().messages({
-          "string.base": "Media URL must be a string",
-          "string.empty": "Media URL is required",
-          "any.required": "Media URL is required",
-        }),
-      })
-    )
-    .optional()
-    .messages({
-      "array.base": "Media must be an array",
+  media: Joi.object({
+    mediaType: Joi.string().required().valid("image", "video").messages({
+      "string.base": "Media type must be a string",
+      "string.empty": "Media type is required",
+      "any.required": "Media type is required",
+      "any.only": "Media type must be either 'image' or 'video'",
     }),
-
+    mediaUrl: Joi.string().required().trim().messages({
+      "string.base": "Media URL must be a string",
+      "string.empty": "Media URL is required",
+      "any.required": "Media URL is required",
+    }),
+  }).optional(),
   analytics: Joi.object({
     ticketsAvailable: Joi.number().integer().min(0).optional().messages({
       "number.base": "ticketsAvailable must be a number",
@@ -256,7 +234,6 @@ export const updateEventValidation = Joi.object({
       "number.min": "dislikes must be a non-negative integer",
     }),
   }).optional(),
-
   tags: Joi.array()
     .items(
       Joi.string()
@@ -270,7 +247,6 @@ export const updateEventValidation = Joi.object({
     .messages({
       "array.base": "Tags must be an array",
     }),
-
   category: Joi.array()
     .items(
       Joi.string()
@@ -284,7 +260,6 @@ export const updateEventValidation = Joi.object({
     .messages({
       "array.base": "Category must be an array",
     }),
-
   organizer: Joi.string()
     .optional()
     .pattern(/^[0-9a-fA-F]{24}$/)

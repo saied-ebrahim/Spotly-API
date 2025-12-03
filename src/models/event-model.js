@@ -7,13 +7,13 @@ const EventSchema = new mongoose.Schema(
     date: { type: Date, required: [true, "Event date is required"] },
     time: { type: String, required: [true, "Event time is required"] },
     location: {
-      country: { type: String, required: [true, "Event country is required"] },
+      district: { type: String, required: [true, "Event district is required"] },
       city: { type: String, required: [true, "Event city is required"] },
       address: { type: String, required: [true, "Event address is required"] },
       latitude: { type: Number, nullable: true, default: null },
       longitude: { type: Number, nullable: true, default: null },
     },
-    media: [{ mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } }],
+    media: { mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } },
     analytics: {
       ticketsSold: { type: Number, default: 0 },
       ticketsAvailable: { type: Number, default: 0 },
