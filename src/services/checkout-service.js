@@ -1,7 +1,10 @@
 import Stripe from "stripe";
 import AppError from "../utils/AppError.js";
+import userModel from "../models/user-model.js";
 import eventModel from "../models/event-model.js";
 import orderModel from "../models/order-model.js";
+import attendeeModel from "../models/attendee-model.js";
+import checkoutModel from "../models/checkout-model.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -67,10 +70,71 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
     cancel_url: `http://localhost:5000/api/v1/checkout/cancel`,
   });
 
-  return session.url;
+  return session;
 };
 
-const completeOrderService = async () => {};
+const completeOrderService = async (userId, userAgent, sessionID) => {
+  const [session, lineItems] = await Promise.all([stripe.checkout.sessions.retrieve(sessionID, { expand: ["payment_intent.payment_method"] }), stripe.checkout.sessions.listLineItems(sessionID)]);
+
+  console.log("USER", typeof session.metadata.userId);
+  console.log("event", session.metadata.eventId);
+
+  // ! Check User
+  const user = await userModel.findById(userId);
+  if (!user) throw new AppError("User not found, Please login first", 404);
+
+  // ! Check Event
+  const event = await eventModel.findById(session.metadata.eventId);
+  if (!event) throw new AppError("Event not found", 404);
+
+  // ! 1- Checkout Document
+  const checkout = await checkoutModel.create({
+    orderID: session.metadata.orderId,
+    user: {
+      userID: session.metadata.userId,
+      name: session.customer_details.name,
+      email: session.customer_details.email,
+      phone: session.customer_details.phone,
+      address: {
+        country: session.customer_details.address.country,
+        city: session.customer_details.address.city,
+        line1: session.customer_details.address.line1,
+        line2: session.customer_details.address.line2,
+        state: session.customer_details.address.state,
+        postalCode: session.customer_details.address.postal_code,
+      },
+    },
+    totalAmount: session.amount_total / 100,
+    currency: session.currency,
+    provider: "stripe",
+    paymentMethod: "card",
+    status: "paid",
+    transactionId: session.payment_intent.id,
+    paidAt: Date.now(),
+    metadata: {
+      eventId: session.metadata.eventId,
+      ticketTypeId: session.metadata.ticketTypeId,
+      quantity: +session.metadata.quantity,
+    },
+    userAgent: userAgent,
+    fingerprint: session.payment_intent.payment_method.card.fingerprint,
+  });
+  if (!checkout) throw new AppError("Failed to create checkout", 500);
+
+  // ! 2- Attendee Document
+  const attendee = await attendeeModel.create({
+    userId: String(session.metadata.userId),
+    eventId: String(session.metadata.eventId),
+    checkoutId: String(checkout._id),
+  });
+  if (!attendee) throw new AppError("Failed to create attendee for this event", 500);
+
+  // ! 3- Edit Event Document
+  event.analytics.ticketsSold += session.metadata.quantity;
+  event.analytics.ticketsAvailable -= session.metadata.quantity;
+  event.analytics.totalRevenue += +session.amount_total / 100;
+  await event.save();
+};
 
 // const cancelOrderService = async () => {};
 

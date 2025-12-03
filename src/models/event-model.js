@@ -16,7 +16,7 @@ const EventSchema = new mongoose.Schema(
     media: [{ mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } }],
     analytics: {
       ticketsSold: { type: Number, default: 0 },
-      ticketsAvailable: { type: Number, default: 0, required: [true, "Event tickets available is required"] },
+      ticketsAvailable: { type: Number, default: 0 },
       totalRevenue: { type: Number, default: 0 },
       waitingListCount: { type: Number, default: 0 },
       likes: { type: Number, default: 0 },
