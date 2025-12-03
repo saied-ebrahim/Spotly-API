@@ -114,7 +114,6 @@ export const createEventValidation = Joi.object({
       "any.required": "Media URL is required",
     }),
   }).optional(),
-
   category: Joi.array()
     .items(
       Joi.string()
@@ -134,7 +133,6 @@ export const createEventValidation = Joi.object({
       "array.min": "At least one category is required",
       "any.required": "At least one category is required",
     }),
-
   organizer: Joi.string()
     .optional()
     .pattern(/^[0-9a-fA-F]{24}$/)
@@ -143,7 +141,6 @@ export const createEventValidation = Joi.object({
       "string.pattern.base": "Organizer must be a valid Mongo ID",
       "any.required": "Organizer ID is required",
     }),
-
   ticketType: Joi.object({
     price: Joi.number().required().messages({
       "number.base": "Ticket type price must be a number",
@@ -173,7 +170,6 @@ export const updateEventValidation = Joi.object({
     "string.base": "Time must be a string",
     "string.empty": "Time cannot be empty",
   }),
-
   location: Joi.object({
     district: Joi.string().optional().trim().messages({
       "string.base": "Location district must be a string",
@@ -194,7 +190,6 @@ export const updateEventValidation = Joi.object({
       "number.base": "Location longitude must be a number",
     }),
   }).optional(),
-
   media: Joi.object({
     mediaType: Joi.string().required().valid("image", "video").messages({
       "string.base": "Media type must be a string",
@@ -208,7 +203,6 @@ export const updateEventValidation = Joi.object({
       "any.required": "Media URL is required",
     }),
   }).optional(),
-
   analytics: Joi.object({
     ticketsAvailable: Joi.number().integer().min(0).optional().messages({
       "number.base": "ticketsAvailable must be a number",
@@ -240,7 +234,6 @@ export const updateEventValidation = Joi.object({
       "number.min": "dislikes must be a non-negative integer",
     }),
   }).optional(),
-
   tags: Joi.array()
     .items(
       Joi.string()
@@ -254,7 +247,6 @@ export const updateEventValidation = Joi.object({
     .messages({
       "array.base": "Tags must be an array",
     }),
-
   category: Joi.array()
     .items(
       Joi.string()
@@ -268,7 +260,6 @@ export const updateEventValidation = Joi.object({
     .messages({
       "array.base": "Category must be an array",
     }),
-
   organizer: Joi.string()
     .optional()
     .pattern(/^[0-9a-fA-F]{24}$/)
