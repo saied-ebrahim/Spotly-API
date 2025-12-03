@@ -7,7 +7,7 @@ const EventSchema = new mongoose.Schema(
     date: { type: Date, required: [true, "Event date is required"] },
     time: { type: String, required: [true, "Event time is required"] },
     location: {
-      country: { type: String, required: [true, "Event country is required"] },
+      district: { type: String, required: [true, "Event district is required"] },
       city: { type: String, required: [true, "Event city is required"] },
       address: { type: String, required: [true, "Event address is required"] },
       latitude: { type: Number, nullable: true, default: null },
