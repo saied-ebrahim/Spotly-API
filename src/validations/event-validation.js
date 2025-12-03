@@ -34,10 +34,10 @@ export const createEventValidation = Joi.object({
     "any.required": "Time is required",
   }),
   location: Joi.object({
-    country: Joi.string().required().trim().messages({
-      "string.base": "Location country must be a string",
-      "string.empty": "Location country is required",
-      "any.required": "Location country is required",
+    district: Joi.string().required().trim().messages({
+      "string.base": "Location district must be a string",
+      "string.empty": "Location district is required",
+      "any.required": "Location district is required",
     }),
     city: Joi.string().required().trim().messages({
       "string.base": "Location city must be a string",
@@ -175,9 +175,9 @@ export const updateEventValidation = Joi.object({
   }),
 
   location: Joi.object({
-    country: Joi.string().optional().trim().messages({
-      "string.base": "Location country must be a string",
-      "string.empty": "Location country cannot be empty",
+    district: Joi.string().optional().trim().messages({
+      "string.base": "Location district must be a string",
+      "string.empty": "Location district cannot be empty",
     }),
     city: Joi.string().optional().trim().messages({
       "string.base": "Location city must be a string",
