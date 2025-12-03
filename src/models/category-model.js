@@ -9,15 +9,4 @@ const CategorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Virtual populate for events
-CategorySchema.virtual("events", {
-  ref: "Event",
-  localField: "_id",
-  foreignField: "category",
-});
-
-// Enable virtual fields in JSON output
-CategorySchema.set("toJSON", { virtuals: true });
-CategorySchema.set("toObject", { virtuals: true });
-
 export default mongoose.model("Category", CategorySchema);
