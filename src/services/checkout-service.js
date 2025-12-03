@@ -11,7 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const checkoutService = async (userID, eventID, quantity, discount = 0) => {
   const event = await eventModel.findById(eventID);
   if (!event) throw new AppError("Event not found", 404);
-  if (event.ticketType.quantity < quantity) throw new AppError("Not enough tickets available", 400);
+  if (event.analytics.ticketsAvailable < quantity) throw new AppError("Not enough tickets available", 400);
 
   let discounrPerTicket;
   let totalAfterDiscount;
@@ -70,24 +70,18 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
     cancel_url: `http://localhost:5000/api/v1/checkout/cancel`,
   });
 
-  return session;
+  return session.url;
 };
 
 const completeOrderService = async (userId, userAgent, sessionID) => {
   const [session, lineItems] = await Promise.all([stripe.checkout.sessions.retrieve(sessionID, { expand: ["payment_intent.payment_method"] }), stripe.checkout.sessions.listLineItems(sessionID)]);
 
-  console.log("USER", typeof session.metadata.userId);
-  console.log("event", session.metadata.eventId);
-
-  // ! Check User
   const user = await userModel.findById(userId);
   if (!user) throw new AppError("User not found, Please login first", 404);
 
-  // ! Check Event
   const event = await eventModel.findById(session.metadata.eventId);
   if (!event) throw new AppError("Event not found", 404);
 
-  // ! 1- Checkout Document
   const checkout = await checkoutModel.create({
     orderID: session.metadata.orderId,
     user: {
@@ -121,7 +115,6 @@ const completeOrderService = async (userId, userAgent, sessionID) => {
   });
   if (!checkout) throw new AppError("Failed to create checkout", 500);
 
-  // ! 2- Attendee Document
   const attendee = await attendeeModel.create({
     userId: String(session.metadata.userId),
     eventId: String(session.metadata.eventId),
@@ -129,9 +122,8 @@ const completeOrderService = async (userId, userAgent, sessionID) => {
   });
   if (!attendee) throw new AppError("Failed to create attendee for this event", 500);
 
-  // ! 3- Edit Event Document
-  event.analytics.ticketsSold += session.metadata.quantity;
-  event.analytics.ticketsAvailable -= session.metadata.quantity;
+  event.analytics.ticketsSold = +event.analytics.ticketsSold + +session.metadata.quantity;
+  event.analytics.ticketsAvailable = +event.analytics.ticketsAvailable - +session.metadata.quantity;
   event.analytics.totalRevenue += +session.amount_total / 100;
   await event.save();
 };

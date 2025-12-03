@@ -1,9 +1,7 @@
-// import Stripe from "stripe";
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
 import { checkoutService, completeOrderService } from "../services/checkout-service.js";
-import verifyToken from "../utils/verifyRefreshToken.js";
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 /**
  * @desc Create Checkout Session
  * @route POST /api/v1/checkout/checkout
