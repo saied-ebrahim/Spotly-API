@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, required: [true, "Password is required"] },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     avatar: { type: String },
+    phone: { type: Number, required: [true, "Phone number is required"] },
     refreshTokens: [{ deviceID: { type: String, required: [true, "Device ID is required"], lowercase: true }, token: { type: String, required: true } }],
     resetPasswordToken: String,
     resetPasswordExpires: Date,

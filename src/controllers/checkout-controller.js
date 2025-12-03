@@ -1,6 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
 import { checkoutService, completeOrderService } from "../services/checkout-service.js";
+import verfiyToken from "../utils/verifyRefreshToken.js";
 
 /**
  * @desc Create Checkout Session
@@ -20,7 +21,7 @@ const checkoutController = expressAsyncHandler(async (req, res, next) => {
  * @access Public
  */
 const completeOrderController = expressAsyncHandler(async (req, res) => {
-  const userId = "692ff7a0fe2bdb151e10e764";
+  const userId = String(req.user._id);
   await completeOrderService(userId, req.headers.user_agent, req.query.session_id);
   res.send("Completed");
 });
@@ -30,8 +31,8 @@ const completeOrderController = expressAsyncHandler(async (req, res) => {
  * @route GET /api/v1/checkout/cancel
  * @access Public
  */
-const canceleOrderController = expressAsyncHandler(async (req, res) => {
+const cancelOrderController = expressAsyncHandler(async (req, res) => {
   res.redirect("/api/v1/page");
 });
 
-export { checkoutController, completeOrderController };
+export { checkoutController, completeOrderController, cancelOrderController };
