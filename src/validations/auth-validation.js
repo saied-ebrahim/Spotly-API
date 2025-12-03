@@ -74,9 +74,9 @@ const signUpSchema = Joi.object({
     "string.email": "Email must be a valid email address",
     "string.empty": "Email cannot be empty",
   }),
-  phone: Joi.number().required().messages({
+  phone: Joi.string().required().messages({
     "any.required": "Phone number is required",
-    "number.empty": "Phone number cannot be empty",
+    "string.empty": "Phone number cannot be empty",
   }),
   password: Joi.string().required().min(8).max(15).messages({
     "any.required": "Password is required",
