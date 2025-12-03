@@ -16,7 +16,7 @@ export const createCategory = async (categoryData) => {
  * @returns {Promise<Array>} Array of categories
  */
 export const getAllCategories = async () => {
-  const categories = await Category.find().populate("events");
+  const categories = await Category.find();
   return categories;
 };
 
@@ -26,7 +26,7 @@ export const getAllCategories = async () => {
  * @returns {Promise<Object>} Category data
  */
 export const getCategoryById = async (categoryId) => {
-  const category = await Category.findById(categoryId).populate("events");
+  const category = await Category.findById(categoryId);
 
   if (!category) {
     throw new AppError("Category not found", 404);
@@ -45,7 +45,7 @@ export const updateCategory = async (categoryId, updateData) => {
   const category = await Category.findByIdAndUpdate(categoryId, updateData, {
     new: true,
     runValidators: true,
-  }).populate("events");
+  });
 
   if (!category) {
     throw new AppError("Category not found", 404);
