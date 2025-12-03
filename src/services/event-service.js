@@ -51,16 +51,16 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
 };
 
 export const getEventById = async (eventId) => {
-  // const event = await eventModel.findById(eventId).populate("organizer").populate("category").populate("tags");
-  const event = await eventModel.findById(eventId);
+  const event = await eventModel.findById(eventId).populate("organizer").populate("category").populate("tags");
+  // const event = await eventModel.findById(eventId);
   if (!event) throw new AppError("Event not found", 404);
   return event;
 };
 
 export const updateEvent = async (eventId, updateData) => {
   const { organizer, ...restUpdateData } = updateData;
-  // const event = await eventModel.findByIdAndUpdate(eventId, restUpdateData, { new: true, runValidators: true }).populate("organizer").populate("category").populate("tags");
-  const event = await eventModel.findByIdAndUpdate(eventId, restUpdateData, { new: true, runValidators: true });
+  const event = await eventModel.findByIdAndUpdate(eventId, restUpdateData, { new: true, runValidators: true }).populate("organizer").populate("category").populate("tags");
+  // const event = await eventModel.findByIdAndUpdate(eventId, restUpdateData, { new: true, runValidators: true });
   if (!event) throw new AppError("Event not found", 404);
 
   return event;
