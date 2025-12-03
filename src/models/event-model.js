@@ -32,7 +32,7 @@ const EventSchema = new mongoose.Schema(
     },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag", required: [true, "At least one tag is required"] }],
     category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category", required: [true, "At least one category is required"] }],
-    organizer: { type: mongoose.Schema.Types.ObjectId, ref: "Organizer", required: [true, "Event organizer is required"] },
+    organizer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: [true, "Event organizer is required"] },
   },
   { timestamps: true }
 );

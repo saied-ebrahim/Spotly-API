@@ -5,8 +5,8 @@ import generateToken from "../utils/generateToken.js";
 import { MAX_REFRESH_TOKENS_PER_USER } from "../utils/constants.js";
 
 export const signUpService = async (userData) => {
-  const { firstName, lastName, gender, address, email, password } = userData;
-  if (!firstName || !lastName || !gender || !address || !email || !password) {
+  const { firstName, lastName, gender, phone, address, email, password } = userData;
+  if (!firstName || !lastName || !gender || !phone || !address || !email || !password) {
     throw new AppError("Please provide all required fields", 400);
   }
 
@@ -15,7 +15,7 @@ export const signUpService = async (userData) => {
     throw new AppError("User with this email already exists", 409);
   }
 
-  const user = await userModel.create({ firstName, lastName, gender, address, email, password });
+  const user = await userModel.create({ firstName, lastName, gender, phone, address, email, password });
 
   if (!user) {
     throw new AppError("Registration failed!", 500);
@@ -29,13 +29,11 @@ export const loginService = async (loginData) => {
   }
 
   const user = await userModel.findOne({ email });
-  console.log("from login user", user);
   if (!user) {
     throw new AppError("Invalid email", 401);
   }
 
   const checkPassword = await user.comparePassword(password);
-  console.log("from login checkPassword", checkPassword);
   if (!checkPassword) {
     throw new AppError("Invalid password", 401);
   }

@@ -11,6 +11,7 @@ import verifyToken from "../utils/verifyRefreshToken.js";
 export const createEvent = expressAsyncHandler(async (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
   const decoded = verifyToken(token, process.env.JWT_SECRET);
+  console.log(decoded.id);
   const event = await eventService.createEvent(req.body, decoded.id);
   res.status(201).json({ status: "success", data: { event } });
 });
@@ -23,7 +24,7 @@ export const createEvent = expressAsyncHandler(async (req, res, next) => {
  */
 export const getAllEvents = expressAsyncHandler(async (req, res, next) => {
   const { page, limit, search, category, tag, sort, order } = req.query;
-
+  console.log(category);
   const result = await eventService.getAllEvents({
     page: page ? parseInt(page) : 1,
     limit: limit ? parseInt(limit) : 10,
