@@ -27,9 +27,9 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
 
   const events = await eventModel
     .find(query)
-    .populate("category")
-    .populate("tags")
-    .populate("organizer")
+    .populate("category", "name")
+    .populate("tags", "name")
+    .populate("organizer", "firstName lastName")
     .sort({ [sort]: sortOrder })
     .skip(skip)
     .limit(limit);
