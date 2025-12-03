@@ -1,4 +1,3 @@
-// validations/event-validation.js
 import Joi from "joi";
 import eventModel from "../models/event-model.js";
 export const createEventValidation = Joi.object({

@@ -23,10 +23,12 @@ const EventSchema = new mongoose.Schema(
       dislikes: { type: Number, default: 0 },
     },
     ticketType: {
+      ticketID: { type: String },
       title: { type: String },
       price: { type: Number, required: [true, "Ticket type price is required"] },
       quantity: { type: Number, required: [true, "Ticket type quantity is required"] },
-      image: { type: String, required: [true, "Ticket type image is required"] },
+      image: { type: String },
+      discount: { type: Number },
     },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag", required: [true, "At least one tag is required"] }],
     category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category", required: [true, "At least one category is required"] }],
@@ -34,5 +36,13 @@ const EventSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// ! Generate ticket ID
+EventSchema.pre("save", function (next) {
+  if (!this.ticketType.ticketID) {
+    this.ticketType.ticketID = "TICKET-" + Date.now() + "-" + Math.floor(Math.random() * 10000);
+  }
+  next();
+});
 
 export default mongoose.model("Event", EventSchema);
