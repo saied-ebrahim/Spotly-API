@@ -85,38 +85,6 @@ export const createEventValidation = Joi.object({
       "array.min": "At least one media item is required",
       "any.required": "At least one media item is required",
     }),
-  analytics: Joi.object({
-    ticketsAvailable: Joi.number().integer().min(0).optional().messages({
-      "number.base": "ticketsAvailable must be a number",
-      "number.integer": "ticketsAvailable must be an integer",
-      "number.min": "ticketsAvailable must be a non-negative integer",
-    }),
-    ticketsSold: Joi.number().integer().min(0).optional().messages({
-      "number.base": "ticketsSold must be a number",
-      "number.integer": "ticketsSold must be an integer",
-      "number.min": "ticketsSold must be a non-negative integer",
-    }),
-    totalRevenue: Joi.number().min(0).optional().messages({
-      "number.base": "totalRevenue must be a number",
-      "number.min": "totalRevenue must be a non-negative number",
-    }),
-    waitingListCount: Joi.number().integer().min(0).optional().messages({
-      "number.base": "waitingListCount must be a number",
-      "number.integer": "waitingListCount must be an integer",
-      "number.min": "waitingListCount must be a non-negative integer",
-    }),
-    likes: Joi.number().integer().min(0).optional().messages({
-      "number.base": "likes must be a number",
-      "number.integer": "likes must be an integer",
-      "number.min": "likes must be a non-negative integer",
-    }),
-    dislikes: Joi.number().integer().min(0).optional().messages({
-      "number.base": "dislikes must be a number",
-      "number.integer": "dislikes must be an integer",
-      "number.min": "dislikes must be a non-negative integer",
-    }),
-  }).optional(),
-
   ticketType: Joi.object({
     title: Joi.string().required().trim().messages({
       "string.base": "Ticket type title must be a string",

@@ -8,7 +8,7 @@ export const createEvent = async (eventData, userId) => {
     throw new AppError("Missing required fields", 400);
   }
 
-  const event = await eventModel.create({ ...eventData, organizer: userId, ticketType: { title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity, image: "ticket-img" } });
+  const event = await eventModel.create({ ...eventData, analytics: { ticketsAvailable: eventData.ticketType.quantity }, organizer: userId, ticketType: { title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity, image: "ticket-img" } });
   if (!event) throw new AppError("Event not created", 500);
 
   const organizer = await organizerModel.create({ userID: userId, eventID: event._id });

@@ -1,8 +1,9 @@
-import Stripe from "stripe";
+// import Stripe from "stripe";
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
 import { checkoutService, completeOrderService } from "../services/checkout-service.js";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+import verifyToken from "../utils/verifyRefreshToken.js";
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 /**
  * @desc Create Checkout Session
  * @route POST /api/v1/checkout/checkout
@@ -21,17 +22,8 @@ const checkoutController = expressAsyncHandler(async (req, res, next) => {
  * @access Public
  */
 const completeOrderController = expressAsyncHandler(async (req, res) => {
-  const [session, lineItems] = await Promise.all([stripe.checkout.sessions.retrieve(req.query.session_id, { expand: ["payment_intent.payment_method"] }), stripe.checkout.sessions.listLineItems(req.query.session_id)]);
-  console.log(JSON.stringify(session));
-  console.log("----------------------");
-  console.log("----------------------");
-  console.log("----------------------");
-  console.log("----------------------");
-  console.log(JSON.stringify(lineItems));
-  console.log("----------------------");
-  console.log("----------------------");
-  console.log("----------------------");
-  console.log("----------------------");
+  const userId = "692ff7a0fe2bdb151e10e764";
+  await completeOrderService(userId, req.headers.user_agent, req.query.session_id);
   res.send("Completed");
 });
 
