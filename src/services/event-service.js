@@ -1,5 +1,4 @@
 import AppError from "../utils/AppError.js";
-
 import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
 
@@ -22,16 +21,15 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
   const sortOrder = order === "asc" ? 1 : -1;
 
   const query = {};
-
   if (search) query.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }];
-
   if (category) query.category = category;
-
   if (tag) query.tags = tag;
 
   const events = await eventModel
     .find(query)
-    // .populate("organizer", "name")
+    .populate("category")
+    .populate("tags")
+    .populate("organizer")
     .sort({ [sort]: sortOrder })
     .skip(skip)
     .limit(limit);

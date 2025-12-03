@@ -1,7 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
 import { checkoutService, completeOrderService } from "../services/checkout-service.js";
-import verfiyToken from "../utils/verifyRefreshToken.js";
 
 /**
  * @desc Create Checkout Session

@@ -128,6 +128,4 @@ const completeOrderService = async (userId, userAgent, sessionID) => {
   await event.save();
 };
 
-// const cancelOrderService = async () => {};
-
 export { checkoutService, completeOrderService };
