@@ -1,15 +1,13 @@
 import AppError from "../utils/AppError.js";
-
-//
 import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
 
 export const createEvent = async (eventData, userId) => {
-  if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.location || !eventData.media || !eventData.tags || !eventData.category) {
+  if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.location || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.price || !eventData.ticketType.quantity) {
     throw new AppError("Missing required fields", 400);
   }
 
-  const event = await eventModel.create({ ...eventData, organizer: userId });
+  const event = await eventModel.create({ ...eventData, analytics: { ticketsAvailable: eventData.ticketType.quantity }, organizer: userId, ticketType: { title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity, image: "ticket-img" } });
   if (!event) throw new AppError("Event not created", 500);
 
   const organizer = await organizerModel.create({ userID: userId, eventID: event._id });
@@ -23,16 +21,16 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
   const sortOrder = order === "asc" ? 1 : -1;
 
   const query = {};
-
   if (search) query.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }];
-
   if (category) query.category = category;
-
   if (tag) query.tags = tag;
 
   const events = await eventModel
     .find(query)
-.populate("organizer").populate("category").sort({ [sort]: sortOrder })
+    .populate("category", "name")
+    .populate("tags", "name")
+    .populate("organizer", "firstName lastName")
+    .sort({ [sort]: sortOrder })
     .skip(skip)
     .limit(limit);
 
