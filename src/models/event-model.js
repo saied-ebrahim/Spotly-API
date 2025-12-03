@@ -13,7 +13,7 @@ const EventSchema = new mongoose.Schema(
       latitude: { type: Number, nullable: true, default: null },
       longitude: { type: Number, nullable: true, default: null },
     },
-    media: [{ mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } }],
+    media: { mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } },
     analytics: {
       ticketsSold: { type: Number, default: 0 },
       ticketsAvailable: { type: Number, default: 0 },

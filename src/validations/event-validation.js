@@ -1,5 +1,6 @@
 import Joi from "joi";
 import eventModel from "../models/event-model.js";
+
 export const createEventValidation = Joi.object({
   title: Joi.string()
     .required()
@@ -62,29 +63,6 @@ export const createEventValidation = Joi.object({
       "object.base": "Location is required",
       "any.required": "Location is required",
     }),
-  media: Joi.array()
-    .items(
-      Joi.object({
-        mediaType: Joi.string().required().valid("image", "video").messages({
-          "string.base": "Media type must be a string",
-          "string.empty": "Media type is required",
-          "any.required": "Media type is required",
-          "any.only": "Media type must be either 'image' or 'video'",
-        }),
-        mediaUrl: Joi.string().required().trim().messages({
-          "string.base": "Media URL must be a string",
-          "string.empty": "Media URL is required",
-          "any.required": "Media URL is required",
-        }),
-      })
-    )
-    .min(1)
-    .required()
-    .messages({
-      "array.base": "Media must be an array",
-      "array.min": "At least one media item is required",
-      "any.required": "At least one media item is required",
-    }),
   ticketType: Joi.object({
     title: Joi.string().required().trim().messages({
       "string.base": "Ticket type title must be a string",
@@ -123,6 +101,19 @@ export const createEventValidation = Joi.object({
       "array.min": "At least one tag is required",
       "any.required": "At least one tag is required",
     }),
+  media: Joi.object({
+    mediaType: Joi.string().required().valid("image", "video").messages({
+      "string.base": "Media type must be a string",
+      "string.empty": "Media type is required",
+      "any.required": "Media type is required",
+      "any.only": "Media type must be either 'image' or 'video'",
+    }),
+    mediaUrl: Joi.string().required().trim().messages({
+      "string.base": "Media URL must be a string",
+      "string.empty": "Media URL is required",
+      "any.required": "Media URL is required",
+    }),
+  }).optional(),
 
   category: Joi.array()
     .items(
@@ -204,26 +195,19 @@ export const updateEventValidation = Joi.object({
     }),
   }).optional(),
 
-  media: Joi.array()
-    .items(
-      Joi.object({
-        mediaType: Joi.string().required().valid("image", "video").messages({
-          "string.base": "Media type must be a string",
-          "string.empty": "Media type is required",
-          "any.required": "Media type is required",
-          "any.only": "Media type must be either 'image' or 'video'",
-        }),
-        mediaUrl: Joi.string().required().trim().messages({
-          "string.base": "Media URL must be a string",
-          "string.empty": "Media URL is required",
-          "any.required": "Media URL is required",
-        }),
-      })
-    )
-    .optional()
-    .messages({
-      "array.base": "Media must be an array",
+  media: Joi.object({
+    mediaType: Joi.string().required().valid("image", "video").messages({
+      "string.base": "Media type must be a string",
+      "string.empty": "Media type is required",
+      "any.required": "Media type is required",
+      "any.only": "Media type must be either 'image' or 'video'",
     }),
+    mediaUrl: Joi.string().required().trim().messages({
+      "string.base": "Media URL must be a string",
+      "string.empty": "Media URL is required",
+      "any.required": "Media URL is required",
+    }),
+  }).optional(),
 
   analytics: Joi.object({
     ticketsAvailable: Joi.number().integer().min(0).optional().messages({
