@@ -8,11 +8,27 @@ export const getAllOrganizers = async () => {
 };
 
 export const getOrganizersByUserId = async (userId) => {
-  const organizers = await Organizer.find({ userID: userId }).populate("userID", "-password -refreshTokens").populate("eventID");
+  const organizers = await Organizer.find({ userID: userId })
+    .populate("userID", "-password -refreshTokens")
+    .populate("eventID")
+    .populate({
+      path: "eventID",
+      populate: {
+        path: "category",
+      },
+    });
   return organizers;
 };
 
 export const getOrganizersByEventId = async (eventId) => {
-  const organizers = await Organizer.find({ eventID: eventId }).populate("userID", "-password -refreshTokens").populate("eventID");
+  const organizers = await Organizer.find({ eventID: eventId })
+    .populate("userID", "-password -refreshTokens")
+    .populate("eventID")
+    .populate({
+      path: "eventID",
+      populate: {
+        path: "category",
+      },
+    });
   return organizers;
 };
