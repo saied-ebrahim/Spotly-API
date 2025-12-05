@@ -6,12 +6,45 @@ const EventSchema = new mongoose.Schema(
     description: { type: String, required: [true, "Event description is required"] },
     date: { type: Date, required: [true, "Event date is required"] },
     time: { type: String, required: [true, "Event time is required"] },
+    type: {
+      type: String,
+      enum: {
+        values: ["online", "offline"],
+        message: "Event type must be either 'online' or 'offline'",
+      },
+      default: "offline",
+      required: [true, "Event type is required"],
+    },
     location: {
-      district: { type: String, required: [true, "Event district is required"] },
-      city: { type: String, required: [true, "Event city is required"] },
-      address: { type: String, required: [true, "Event address is required"] },
-      latitude: { type: Number, nullable: true, default: null },
-      longitude: { type: Number, nullable: true, default: null },
+      district: {
+        type: String,
+        validate: {
+          validator: function () {
+            return this.type === "online" || this.type !== "online";
+          },
+          message: "Event district is required for offline events",
+        },
+      },
+      city: {
+        type: String,
+        validate: {
+          validator: function () {
+            return this.type === "online" || this.type !== "online";
+          },
+          message: "Event city is required for offline events",
+        },
+      },
+      address: {
+        type: String,
+        validate: {
+          validator: function () {
+            return this.type === "online" || this.type !== "online";
+          },
+          message: "Event address is required for offline events",
+        },
+      },
+      latitude: { type: Number },
+      longitude: { type: Number },
     },
     media: { mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } },
     analytics: {
@@ -37,12 +70,39 @@ const EventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ! Generate ticket ID
-EventSchema.pre("save", function (next) {
-  if (!this.ticketType.ticketID) {
-    this.ticketType.ticketID = "TICKET-" + Date.now() + "-" + Math.floor(Math.random() * 10000);
-  }
-  next();
+EventSchema.path("analytics.ticketsAvailable").validate({
+  validator: function (value) {
+    return value >= 0;
+  },
+  message: "Event tickets available must be a non-negative number",
+});
+
+EventSchema.path("analytics.ticketsSold").validate({
+  validator: function (value) {
+    return value >= 0;
+  },
+  message: "Event tickets sold must be a non-negative number",
+});
+
+EventSchema.path("analytics.likes").validate({
+  validator: function (value) {
+    return value >= 0;
+  },
+  message: "Event likes must be a non-negative number",
+});
+
+EventSchema.path("analytics.dislikes").validate({
+  validator: function (value) {
+    return value >= 0;
+  },
+  message: "Event dislikes must be a non-negative number",
+});
+
+EventSchema.path("ticketType.price").validate({
+  validator: function (value) {
+    return value >= 0;
+  },
+  message: "Ticket type price must be a non-negative number",
 });
 
 export default mongoose.model("Event", EventSchema);
