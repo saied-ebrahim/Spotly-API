@@ -12,6 +12,7 @@ const EventSchema = new mongoose.Schema(
         values: ["online", "offline"],
         message: "Event type must be either 'online' or 'offline'",
       },
+      default: "offline",
       required: [true, "Event type is required"],
     },
     location: {
