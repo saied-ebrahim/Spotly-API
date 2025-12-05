@@ -14,6 +14,7 @@ export const getAllOrders = expressAsyncHandler(async (_, res) => {
 // @access Private
 export const getOrderById = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
-  const order = await orderService.getOrderById(id);
+  console.log(id);
+  const order = await orderService.getOrdersById(id);
   res.status(200).json({ status: "success", data: { order } });
 });
