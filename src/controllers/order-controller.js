@@ -1,11 +1,17 @@
 import expressAsyncHandler from "express-async-handler";
 import * as orderService from "../services/order-service.js";
 
-export const getAllOrders = expressAsyncHandler(async (req, res) => {
+// @desc Get all orders
+// @route GET /api/v1/orders
+// @access Private
+export const getAllOrders = expressAsyncHandler(async (_, res) => {
   const orders = await orderService.getAllOrders();
   res.status(200).json({ status: "success", data: { orders } });
 });
 
+// @desc Get order by ID
+// @route GET /api/v1/orders/:id
+// @access Private
 export const getOrderById = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
   const order = await orderService.getOrderById(id);

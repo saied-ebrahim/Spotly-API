@@ -1,4 +1,3 @@
-// controllers/event-controller.js
 import expressAsyncHandler from "express-async-handler";
 import * as eventService from "../services/event-service.js";
 import verifyToken from "../utils/verifyRefreshToken.js";

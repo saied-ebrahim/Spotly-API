@@ -262,6 +262,18 @@ export const updateEventValidation = Joi.object({
       "number.min": "dislikes must be a non-negative integer",
     }),
   }).optional(),
+
+  ticketType: Joi.object({
+    price: Joi.number().optional().messages({
+      "number.base": "Ticket type price must be a number",
+    }),
+    quantity: Joi.number().integer().min(0).optional().messages({
+      "number.base": "Ticket type quantity must be a number",
+      "number.integer": "Ticket type quantity must be an integer",
+      "number.min": "Ticket type quantity must be a non-negative integer",
+    }),
+  }).optional(),
+
   tags: Joi.array()
     .items(
       Joi.string()
@@ -275,6 +287,7 @@ export const updateEventValidation = Joi.object({
     .messages({
       "array.base": "Tags must be an array",
     }),
+
   category: Joi.array()
     .items(
       Joi.string()
@@ -288,6 +301,7 @@ export const updateEventValidation = Joi.object({
     .messages({
       "array.base": "Category must be an array",
     }),
+
   organizer: Joi.string()
     .optional()
     .pattern(/^[0-9a-fA-F]{24}$/)

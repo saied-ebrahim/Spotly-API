@@ -17,6 +17,7 @@ import uploadRoutes from "./routes/upload-routes.js";
 import passwordRoutes from "./routes/password-routes.js";
 import checkoutRoutes from "./routes/checkout-routes.js";
 import ordersRoutes from "./routes/orders-routes.js";
+import favouriteRoutes from "./routes/favourite-routes.js";
 
 // ? Swagger Docs
 import swaggerUi from "swagger-ui-express";
@@ -50,6 +51,7 @@ apiV1.use("/categories", categoryRoutes);
 apiV1.use("/tags", tagRoutes);
 apiV1.use("/checkout", checkoutRoutes);
 apiV1.use("/orders", ordersRoutes);
+apiV1.use("/favourite", favouriteRoutes);
 apiV1.use("/upload", uploadRoutes);
 
 // ? Swagger Docs
