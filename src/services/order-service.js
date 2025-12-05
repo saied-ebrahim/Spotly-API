@@ -5,10 +5,10 @@ export const getAllOrders = async () => {
   const orders = await orderModel.find().populate("userID", "-password -refreshTokens -role -__v");
   return orders;
 };
-export const getOrderById = async (id) => {
-  const order = await orderModel.findById(id).populate("userID", "-password -refreshTokens -role -__v");
-  if (!order) {
-    throw new AppError("Order not found", 404);
+export const getOrdersById = async (userID) => {
+  const orders = await orderModel.find({ userID }).populate("userID", "-password -refreshTokens -role -__v");
+  if (!orders) {
+    throw new AppError("Failed to get orderts", 500);
   }
-  return order;
+  return orders;
 };
