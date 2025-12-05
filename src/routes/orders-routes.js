@@ -6,6 +6,6 @@ import authMiddleware from "../middlewares/auth-middleware.js";
 const router = Router();
 
 router.route("/").get(authMiddleware, authorizeAdmin, getAllOrders);
-router.route("/:id").get(authMiddleware, authorizeAdmin, getOrderById);
+router.route("/:id").get(authMiddleware, getOrderById);
 
 export default router;
