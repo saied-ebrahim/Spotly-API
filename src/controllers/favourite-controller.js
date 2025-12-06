@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import * as favouriteService from "../services/favourite-service.js";
-import { isAdminRequest } from "../utils/admin-utils.js";
+// import { isAdminRequest } from "../utils/admin-utils.js";
 
 // @desc Add to your favourite
 // @route /api/v1/favourite
@@ -17,7 +17,7 @@ export const addFavourite = expressAsyncHandler(async (req, res) => {
 export const getFavourites = expressAsyncHandler(async (req, res) => {
   const userID = req.user.id;
   // Admin can see all favourites, regular users see only their own
-  const favourite = await favouriteService.getFavourites(userID, isAdminRequest(req));
+  const favourite = await favouriteService.getFavourites(userID);
   res.status(200).json({ status: "success", favourite });
 });
 

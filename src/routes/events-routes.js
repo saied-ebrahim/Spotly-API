@@ -4,9 +4,10 @@ import validateMiddleware from "../middlewares/validation-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 import { authorizeEventOrganizer } from "../middlewares/authorize-event-middleware.js";
 import { createEventValidation, updateEventValidation } from "../validations/event-validation.js";
+import ordersRoutes from "../routes/orders-routes.js";
 
 const router = express.Router();
-
+router.use("/orders", ordersRoutes);
 router.get("/", getAllEvents);
 router.get("/:id", getEventById);
 router.post("/", authMiddleware, validateMiddleware(createEventValidation), createEvent);
