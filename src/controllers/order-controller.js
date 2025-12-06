@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import * as orderService from "../services/order-service.js";
 
-// @desc Get all orders
+// @desc Get all orders only for admin
 // @route GET /api/v1/orders
 // @access Private
 export const getAllOrders = expressAsyncHandler(async (_, res) => {
@@ -9,7 +9,7 @@ export const getAllOrders = expressAsyncHandler(async (_, res) => {
   res.status(200).json({ status: "success", data: { orders } });
 });
 
-// @desc Get order by ID
+// @desc Get order by for user by userID
 // @route GET /api/v1/orders/:id
 // @access Private
 export const getOrderById = expressAsyncHandler(async (req, res) => {
