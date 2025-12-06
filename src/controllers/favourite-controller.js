@@ -26,7 +26,6 @@ export const getFavourites = expressAsyncHandler(async (req, res) => {
 export const removeFavourite = expressAsyncHandler(async (req, res) => {
   const userID = req.user.id;
   const { id } = req.params;
-  console.log(id);
   await favouriteService.removeFavourite(userID, id);
   res.status(204).send();
 });

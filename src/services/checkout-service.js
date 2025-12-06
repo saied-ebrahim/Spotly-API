@@ -82,6 +82,8 @@ const completeOrderService = async (userId, userAgent, sessionID) => {
   const event = await eventModel.findById(session.metadata.eventId);
   if (!event) throw new AppError("Event not found", 404);
 
+  console.log(session.metadata.quantity);
+
   const checkout = await checkoutModel.create({
     orderID: session.metadata.orderId,
     user: {
@@ -98,6 +100,7 @@ const completeOrderService = async (userId, userAgent, sessionID) => {
         postalCode: session.customer_details.address.postal_code,
       },
     },
+    // ticketIDS: session.metadata.ticketTypeId,
     totalAmount: session.amount_total / 100,
     currency: session.currency,
     provider: "stripe",

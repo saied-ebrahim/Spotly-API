@@ -20,9 +20,10 @@ const checkoutController = expressAsyncHandler(async (req, res, next) => {
  * @access Public
  */
 const completeOrderController = expressAsyncHandler(async (req, res) => {
-  const userId = String(req.user._id);
+  // const userId = String(req.user._id);
+  const userId = "69319033c8b44d312de0a6d9";
   await completeOrderService(userId, req.headers.user_agent, req.query.session_id);
-  res.send("Completed");
+  res.redirect("https://spotly-clinet.vercel.app/");
 });
 
 /**
@@ -31,7 +32,7 @@ const completeOrderController = expressAsyncHandler(async (req, res) => {
  * @access Public
  */
 const cancelOrderController = expressAsyncHandler(async (req, res) => {
-  res.redirect("/api/v1/page");
+  res.redirect("https://spotly-clinet.vercel.app/");
 });
 
 export { checkoutController, completeOrderController, cancelOrderController };

@@ -17,6 +17,7 @@ const checkoutSchema = new mongoose.Schema(
         postalCode: { type: String },
       },
     },
+    ticketIDS: { type: Array, required: [true, "Ticket IDs are required"] },
     totalAmount: { type: Number, required: [true, "Amount is required"] },
     currency: { type: String, required: [true, "Currency is required"] },
     provider: { type: String, default: "stripe" },

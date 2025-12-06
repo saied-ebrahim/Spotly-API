@@ -23,7 +23,8 @@ export const getOrdersForOrganizer = async (userID) => {
   const events = await eventModel.find({ organizer: userID }).select("ticketType");
 
   const ticketTypes = events.map((event) => event.ticketType.ticketID);
-  console.log(ticketTypes);
 
-  return await orderModel.find({ ticketTypeID: { $in: ticketTypes } });
+  const orders = await orderModel.find({ ticketTypeID: { $in: ticketTypes } });
+
+  return orders;
 };
