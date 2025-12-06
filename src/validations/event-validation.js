@@ -213,9 +213,11 @@ export const updateEventValidation = Joi.object({
     }),
   })
     .when(Joi.ref("type"), {
-      is: "offline",
-      then: Joi.required(),
-      otherwise: Joi.forbidden(),
+      is: "online",
+      then: Joi.forbidden().messages({
+        "any.unknown": "Location is not allowed for online events",
+      }),
+      otherwise: Joi.optional(),
     })
     .optional(),
 

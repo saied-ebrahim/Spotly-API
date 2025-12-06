@@ -13,10 +13,10 @@ export const addFavourite = async (userID, eventID) => {
   if (!newFavourite) throw AppError("Failed to add favourite", 500);
 };
 
-export const getFavourites = async (userID, isAdmin = false) => {
+export const getFavourites = async (userID) => {
   // Admin can see all favourites, regular users see only their own
-  const query = isAdmin ? {} : { userID };
-  const favourite = await favouriteModel.find(query).populate("userID", "firstName lastName email").populate("eventID");
+  // const query = isAdmin ? {} : { userID };
+  const favourite = await favouriteModel.find({ userID }).populate("userID", "firstName lastName email").populate("eventID");
   if (!favourite) throw new AppError("Failed to get favourites", 500);
   return favourite;
 };

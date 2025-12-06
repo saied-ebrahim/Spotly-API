@@ -14,7 +14,15 @@ export const getAllOrders = expressAsyncHandler(async (_, res) => {
 // @access Private
 export const getOrderById = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   const order = await orderService.getOrdersById(id);
   res.status(200).json({ status: "success", data: { order } });
+});
+
+// @desc Get orders for organizer
+// @route GET /api/v1/organizer/events/events/:eventID/orders/orders
+// @access Private
+export const getOrdersForOrganizer = expressAsyncHandler(async (req, res) => {
+  const userID = req.user.id;
+  const orders = await orderService.getOrdersForOrganizer(userID);
+  res.status(200).json({ status: "success", orders });
 });

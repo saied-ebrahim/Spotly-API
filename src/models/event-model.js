@@ -70,6 +70,11 @@ const EventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+EventSchema.pre("save", function (next) {
+  if (!this.ticketType.ticketID) this.ticketType.ticketID = `TICKET-${this.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}`;
+  next();
+});
+
 EventSchema.path("analytics.ticketsAvailable").validate({
   validator: function (value) {
     return value >= 0;
