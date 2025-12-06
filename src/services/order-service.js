@@ -5,6 +5,7 @@ import AppError from "../utils/AppError.js";
 
 export const getAllOrders = async () => {
   const orders = await orderModel.find().populate("userID", "-password -refreshTokens -role -__v");
+  if (!orders) throw new AppError("Failed to get orders", 500);
   return orders;
 };
 

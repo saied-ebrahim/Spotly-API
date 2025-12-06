@@ -4,7 +4,8 @@ import { authorizeAdmin } from "../middlewares/authorize-admin-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 
 const router = Router();
-router.route("/").get(authMiddleware, getOrdersForOrganizer).get(authMiddleware, authorizeAdmin, getAllOrders);
+router.get("/myorders", authMiddleware, getOrdersForOrganizer);
+router.get("/", authMiddleware, authorizeAdmin, getAllOrders);
 router.get("/:id", authMiddleware, getOrderById);
 
 export default router;
