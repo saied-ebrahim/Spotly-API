@@ -25,7 +25,10 @@ export const getOrdersForOrganizer = async (userID) => {
 
   const ticketTypes = events.map((event) => event.ticketType.ticketID);
 
-  const orders = await orderModel.find({ ticketTypeID: { $in: ticketTypes } });
+  const orders = await orderModel
+    .find({ ticketTypeID: { $in: ticketTypes } })
+    .populate("userID", "-password -refreshTokens -role -__v")
+    .populate("eventID", "-__v");
 
   return orders;
 };

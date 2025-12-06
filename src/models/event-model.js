@@ -16,6 +16,7 @@ const EventSchema = new mongoose.Schema(
       required: [true, "Event type is required"],
     },
     location: {
+      country: { type: String, default: "Egypt" },
       district: {
         type: String,
         validate: {

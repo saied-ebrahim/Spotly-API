@@ -27,7 +27,7 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
     pricePerTicket = event.ticketType.price;
   }
 
-  const order = await orderModel.create({ userID, ticketTypeID: event.ticketType.ticketID, quantity, discount, totalAfterDiscount });
+  const order = await orderModel.create({ userID, eventID, ticketTypeID: event.ticketType.ticketID, quantity, discount, totalAfterDiscount });
   if (!order) throw new AppError("Failed to fulfill order", 500);
 
   const session = await stripe.checkout.sessions.create({
