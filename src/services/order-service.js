@@ -28,10 +28,9 @@ export const getAllOrders = async ({ search = "" }) => {
     orderIDs = result.map((r) => r._id);
   }
 
-  const orders = await orderModel
-    .find({ _id: { $in: orderIDs } })
-    .populate("userID", "-password -refreshTokens -role -__v")
-    .populate("eventID", "title description date time location");
+  const query = search ? { _id: { $in: orderIDs } } : {};
+
+  const orders = await orderModel.find(query).populate("userID", "-password -refreshTokens -role -__v").populate("eventID", "title description date time location");
 
   return orders;
 };
