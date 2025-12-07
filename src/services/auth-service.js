@@ -142,3 +142,23 @@ export const getAllUsersService = async ({ page = 1, limit = 5, search = "" } = 
     users,
   };
 };
+
+export const updatemeService = async (userID, userData) => {
+  const user = await userModel.findById(userID);
+  if (!user) throw new AppError("User not found", 404);
+
+  if (userData.address) {
+    user.address = { ...user.address.toObject(), ...userData.address };
+    delete userData.address;
+  }
+
+  if (userData.password) {
+    user.password = userData.password;
+    user.markModified("password");
+    delete userData.password;
+  }
+
+  Object.assign(user, userData);
+  await user.save();
+  return user;
+};

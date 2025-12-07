@@ -121,4 +121,86 @@ const logoutSchema = Joi.object({
   }),
 });
 
-export { signUpSchema, loginSchema, refreshTokenSchema, logoutSchema };
+const updateMeSchema = Joi.object({
+  firstName: Joi.string()
+    .trim()
+    .custom((value) => value.toLowerCase())
+    .min(3)
+    .max(30)
+    .optional()
+    .messages({
+      "string.base": "First name must be a string",
+      "string.empty": "First name cannot be empty",
+      "string.min": "First name must be at least 3 characters long",
+      "string.max": "First name must be at most 30 characters long",
+    }),
+  lastName: Joi.string()
+    .trim()
+    .custom((value) => value.toLowerCase())
+    .min(3)
+    .max(30)
+    .optional()
+    .messages({
+      "string.base": "Last name must be a string",
+      "string.empty": "Last name cannot be empty",
+      "string.min": "Last name must be at least 3 characters long",
+      "string.max": "Last name must be at most 30 characters long",
+    }),
+  gender: Joi.string()
+    .trim()
+    .custom((value) => value.toLowerCase())
+    .valid("male", "female")
+    .optional()
+    .messages({
+      "string.base": "Gender must be a string",
+      "string.empty": "Gender cannot be empty",
+      "any.only": "Gender must be either 'male' or 'female'",
+    }),
+  address: Joi.object({
+    city: Joi.string()
+      .trim()
+      .custom((value) => value.toLowerCase())
+      .optional()
+      .messages({
+        "string.base": "City must be a string",
+        "string.empty": "City cannot be empty",
+      }),
+    country: Joi.string()
+      .trim()
+      .custom((value) => value.toLowerCase())
+      .optional()
+      .messages({
+        "string.base": "Country must be a string",
+        "string.empty": "Country cannot be empty",
+      }),
+    state: Joi.string()
+      .trim()
+      .custom((value) => value.toLowerCase())
+      .optional()
+      .messages({
+        "string.base": "State must be a string",
+      }),
+  }).messages({
+    "any.required": "Address is required",
+  }),
+  email: Joi.string().optional().trim().email().lowercase().messages({
+    "string.email": "Email must be a valid email address",
+    "string.empty": "Email cannot be empty",
+  }),
+  phone: Joi.string().optional().trim().messages({
+    "string.base": "Phone number must be a string",
+    "string.empty": "Phone number cannot be empty",
+  }),
+  password: Joi.string().optional().trim().min(8).max(15).messages({
+    "string.base": "Password must be a string",
+    "string.min": "Password must be at least 8 characters long",
+    "string.max": "Password must be at most 15 characters long",
+    "string.empty": "Password cannot be empty",
+  }),
+  avatar: Joi.string().optional().trim().messages({
+    "string.base": "Avatar must be a string",
+    "string.empty": "Avatar cannot be empty",
+  }),
+});
+
+export { signUpSchema, loginSchema, refreshTokenSchema, logoutSchema, updateMeSchema };

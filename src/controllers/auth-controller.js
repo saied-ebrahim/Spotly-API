@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
-import { signUpService, loginService, refreshTokenService, logoutService, logoutAllService, getUserProfileService, getAllUsersService } from "../services/auth-service.js";
+import { signUpService, loginService, refreshTokenService, logoutService, logoutAllService, getUserProfileService, getAllUsersService, updatemeService } from "../services/auth-service.js";
 import verifyToken from "../utils/verifyRefreshToken.js";
 import { getCookieOptions } from "../utils/constants.js";
 import AppError from "../utils/AppError.js";
@@ -120,6 +120,34 @@ export const getMeController = expressAsyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc   Get all users
+ * @route  GET /api/v1/auth/users
+ * @access Protected (Admin only)
+ * @query  page, limit, search
+ */
+export const getAllUsersController = expressAsyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const search = req.query.search || "";
+
+  if (page < 1) throw new AppError("Page number must be greater than 0", 400);
+  if (limit < 1 || limit > 100) throw new AppError("Limit must be between 1 and 100", 400);
+
+  const { users, pagination } = await getAllUsersService({ page, limit, search });
+
+  res.status(200).json({ status: "success", results: users.length, pagination, data: { users } });
+});
+
+// @desc Update me
+// @route PUT /api/v1/auth/updateMe
+// @access Protected
+export const updateMeController = expressAsyncHandler(async (req, res) => {
+  const userID = req.user.id;
+  const newUser = await updatemeService(userID, req.body);
+  res.status(200).json({ status: "success", data: { user: newUser } });
+});
+
+/**
  * @desc   Get user profile by ID
  * @route  GET /api/v1/auth/profile/:id
  * @access Protected
@@ -140,22 +168,3 @@ export const getMeController = expressAsyncHandler(async (req, res) => {
 //     data: { user },
 //   });
 // });
-
-/**
- * @desc   Get all users
- * @route  GET /api/v1/auth/users
- * @access Protected (Admin only)
- * @query  page, limit, search
- */
-export const getAllUsersController = expressAsyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 5;
-  const search = req.query.search || "";
-
-  if (page < 1) throw new AppError("Page number must be greater than 0", 400);
-  if (limit < 1 || limit > 100) throw new AppError("Limit must be between 1 and 100", 400);
-
-  const { users, pagination } = await getAllUsersService({ page, limit, search });
-
-  res.status(200).json({ status: "success", results: users.length, pagination, data: { users } });
-});
