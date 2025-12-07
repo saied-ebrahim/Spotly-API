@@ -39,7 +39,7 @@ export const getTagById = expressAsyncHandler(async (req, res, next) => {
  */
 export const updateTag = expressAsyncHandler(async (req, res, next) => {
   const tag = await tagService.updateTag(req.params.id, req.body);
-  res.status(200).json({ status: "success", data: { tag } });
+  res.status(201).json({ status: "success", data: { tag } });
 });
 
 /**
