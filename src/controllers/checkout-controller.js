@@ -10,7 +10,7 @@ import { checkoutService, webhookService, cancelOrderService } from "../services
 const checkoutController = expressAsyncHandler(async (req, res, next) => {
   const { eventID, quantity, discount } = req.body;
   if (!eventID || !quantity) return next(new AppError("Event ID and quantity are required", 400));
-  const url = await checkoutService(req.user._id, eventID, quantity, discount);
+  const url = await checkoutService(req.user.id, eventID, quantity, discount);
   res.status(201).json({ message: "Checkout session created", url });
 });
 
