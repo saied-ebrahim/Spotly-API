@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
-import { checkoutService, completeOrderService } from "../services/checkout-service.js";
+import { checkoutService, webhookService, cancelOrderService } from "../services/checkout-service.js";
 
 /**
  * @desc Create Checkout Session
@@ -15,14 +15,21 @@ const checkoutController = expressAsyncHandler(async (req, res, next) => {
 });
 
 /**
+ * @desc Webhook
+ * @route POST /api/v1/checkout/webhook
+ * @access Public
+ */
+const webhookController = expressAsyncHandler(async (req, res) => {
+  await webhookService(req, res);
+  res.send();
+});
+
+/**
  * @desc Complete Order
  * @route GET /api/v1/checkout/complete
  * @access Public
  */
 const completeOrderController = expressAsyncHandler(async (req, res) => {
-  // const userId = String(req.user._id);
-  const userId = "69319033c8b44d312de0a6d9";
-  await completeOrderService(userId, req.headers.user_agent, req.query.session_id);
   res.redirect("https://spotly-clinet.vercel.app/");
 });
 
@@ -32,7 +39,8 @@ const completeOrderController = expressAsyncHandler(async (req, res) => {
  * @access Public
  */
 const cancelOrderController = expressAsyncHandler(async (req, res) => {
+  await cancelOrderService(req.query.session_id);
   res.redirect("https://spotly-clinet.vercel.app/");
 });
 
-export { checkoutController, completeOrderController, cancelOrderController };
+export { checkoutController, completeOrderController, cancelOrderController, webhookController };
