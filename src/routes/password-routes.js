@@ -7,8 +7,8 @@ import { forgetPasswordSchema, resetPasswordSchema } from "../validations/passwo
 
 const router = express.Router();
 
-router.post("/forget-password", authMiddleware, validateMiddleware(forgetPasswordSchema), forgetPasswordController);
-router.get("/reset-password-link/:userID/:token", authMiddleware, resetPasswordLinkController);
-router.post("/reset-password/:userID/:token", authMiddleware, validateMiddleware(resetPasswordSchema), resetPasswordController);
+router.post("/forget-password", validateMiddleware(forgetPasswordSchema), forgetPasswordController);
+router.get("/reset-password-link/:userID/:token", resetPasswordLinkController);
+router.post("/reset-password/:userID/:token", validateMiddleware(resetPasswordSchema), resetPasswordController);
 
 export default router;
