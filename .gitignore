@@ -11,3 +11,9 @@ yarn-error.log*
 
 # misc
 .DS_Store
+
+# Test data
+test
+
+# Draft files
+draft
