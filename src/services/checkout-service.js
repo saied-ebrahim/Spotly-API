@@ -5,6 +5,7 @@ import eventModel from "../models/event-model.js";
 import orderModel from "../models/order-model.js";
 import attendeeModel from "../models/attendee-model.js";
 import checkoutModel from "../models/checkout-model.js";
+import { sendEmail } from "../utils/emailSender.js";
 
 // ? Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -70,8 +71,8 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
     shipping_address_collection: { allowed_countries: ["EG"] },
     expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
 
-    success_url: `https://spotly-clinet.vercel.app/`,
-    cancel_url: `http://localhost:5000/api/v1/checkout/cancel?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: process.env.FRONTEND_URL,
+    cancel_url: process.env.FRONTEND_URL,
   });
 
   return session.url;
@@ -153,6 +154,9 @@ const webhookService = async (req, res) => {
     targetEvent.analytics.ticketsAvailable = +targetEvent.analytics.ticketsAvailable - +data.metadata.quantity;
     targetEvent.analytics.totalRevenue += +data.amount_total / 100;
     await targetEvent.save();
+
+    // ? Send Email
+    await sendEmail(data.customer_details.email, "Spotly - Purchase Confirmation", `<p>Thank you for your purchase :)</p>`);
   }
 
   res.send().end();
