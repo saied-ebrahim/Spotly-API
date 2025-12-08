@@ -22,7 +22,7 @@ const checkoutSchema = new mongoose.Schema(
     currency: { type: String, required: [true, "Currency is required"] },
     provider: { type: String, default: "stripe" },
     paymentMethod: {
-      type: String,
+      // type: String,
       method: { type: String, default: "card" },
       brand: { type: String, default: "visa" },
       last4: { type: String, required: [true, "Last 4 digits of card is required"] },

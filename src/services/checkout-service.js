@@ -45,17 +45,9 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
   const order = await orderModel.create({ userID, eventID, ticketTypeID: event.ticketType.ticketID, quantity, discount, totalAfterDiscount, paymentStatus: "pending" });
   if (!order) throw new AppError("Failed to fulfill order", 500);
 
-  const customer = await stripe.customers.create({
-    metadata: {
-      userId: String(userID),
-      order: JSON.stringify({ ticketTypeId: event.ticketType.ticketID, quantity }),
-    },
-  });
-
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
-    customer: customer.id,
     line_items: [
       {
         price_data: {
@@ -69,7 +61,6 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
       },
     ],
     client_reference_id: String(order._id),
-    //// customer_creation: "always",
     metadata: {
       eventId: String(eventID),
       userId: String(userID),
@@ -109,14 +100,8 @@ const webhookService = async (req, res) => {
   const data = event.data.object;
   const eventType = event.type;
 
-  // Log received event for debugging
-  console.log(`Received Stripe webhook event: ${eventType}`);
-
   if (eventType === "checkout.session.completed") {
     await processCheckoutSession(data, req);
-  } else {
-    // Handle other Stripe events if needed
-    console.log(`Unhandled event type: ${eventType}`);
   }
 
   res.status(200).send().end();
@@ -128,12 +113,10 @@ const processCheckoutSession = async (stripeSession, req) => {
   session_db.startTransaction();
 
   try {
-    const customer = await stripe.customers.retrieve(stripeSession.customer);
-    const user = await userModel.findById(customer.metadata.userId).session(session_db);
+    const user = await userModel.findById(stripeSession.metadata.userId).session(session_db);
     const event = await eventModel.findOne({ _id: stripeSession.metadata.eventId }).session(session_db);
     const order = await orderModel.findOne({ _id: stripeSession.metadata.orderId }).session(session_db);
-
-    if (!customer || !user || !event || !order) {
+    if (!user || !event || !order) {
       throw new AppError("Required data not found to checkout", 404);
     }
 
@@ -171,7 +154,7 @@ const processCheckoutSession = async (stripeSession, req) => {
           }
         }
       } catch (err) {
-        console.warn("Could not retrieve payment method details:", err.message);
+        console.warn("--- Could not retrieve payment method details:", err.message);
         // Use default values if retrieval fails
       }
     }
@@ -215,7 +198,7 @@ const processCheckoutSession = async (stripeSession, req) => {
     );
 
     if (!checkout || checkout.length === 0) {
-      throw new AppError("Failed to create checkout", 500);
+      throw new AppError("--- Failed to create checkout", 500);
     }
 
     const checkoutDoc = checkout[0];
@@ -229,9 +212,8 @@ const processCheckoutSession = async (stripeSession, req) => {
     const ticketIds = [];
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
-    // Generate QR codes and create tickets
+    // ? Generate QR codes and create tickets
     const ticketPromises = [];
-
     for (let i = 0; i < quantity; i++) {
       const ticketId = new mongoose.Types.ObjectId();
       const qrData = `${frontendUrl}/ticket/verify/${ticketId}`;
@@ -269,14 +251,13 @@ const processCheckoutSession = async (stripeSession, req) => {
     await session_db.commitTransaction();
 
     // ? Send email notification asynchronously (don't block response)
-    sendOrderConfirmationEmail(user.email, checkoutDoc, tickets, event).catch((err) => {
+
+    sendOrderConfirmationEmail(stripeSession.customer_details.email, checkoutDoc, tickets, event).catch((err) => {
       console.error("Failed to send confirmation email:", err);
-      // Don't throw - email failure shouldn't fail the order
     });
 
     console.log(`Successfully processed payment for order ${order._id} with ${quantity} tickets`);
   } catch (error) {
-    // Rollback transaction on error
     await session_db.abortTransaction();
     throw error;
   } finally {
@@ -287,9 +268,7 @@ const processCheckoutSession = async (stripeSession, req) => {
 // ! Send Order Confirmation Email
 const sendOrderConfirmationEmail = async (userEmail, checkout, tickets, event) => {
   try {
-    const ticketsList = tickets
-      .map((ticket, index) => `<li>Ticket ${index + 1}: ${ticket._id}</li>`)
-      .join("");
+    const ticketsList = tickets.map((ticket, index) => `<li>Ticket ${index + 1}: ${ticket._id}</li>`).join("");
 
     const emailHTML = `
       <h2>Order Confirmation</h2>
