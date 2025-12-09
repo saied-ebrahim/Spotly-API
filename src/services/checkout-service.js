@@ -8,6 +8,8 @@ import orderModel from "../models/order-model.js";
 import attendeeModel from "../models/attendee-model.js";
 import checkoutModel from "../models/checkout-model.js";
 import { sendEmail } from "../utils/emailSender.js";
+import { uploadQRToR2WithSignedUrl } from "../utils/uploadQRToR2.js";
+import { generateTicketToken } from "../utils/generateToken.js";
 
 // ? Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -216,16 +218,24 @@ const processCheckoutSession = async (stripeSession, req) => {
     const ticketPromises = [];
     for (let i = 0; i < quantity; i++) {
       const ticketId = new mongoose.Types.ObjectId();
-      const qrData = `${frontendUrl}/ticket/verify/${ticketId}`;
+      // Generate JWT token for ticket verification (more secure than plain ticketId)
+      const ticketToken = generateTicketToken({
+        ticketId: String(ticketId),
+        eventId: String(stripeSession.metadata.eventId),
+        userId: String(stripeSession.metadata.userId),
+      });
+      const qrData = `${frontendUrl}/ticket/verify/${ticketToken}`;
 
       ticketPromises.push(
-        QRCode.toDataURL(qrData).then((qrImage) => ({
-          _id: ticketId,
-          userId: String(stripeSession.metadata.userId),
-          eventId: String(stripeSession.metadata.eventId),
-          checkoutId: String(checkoutDoc._id),
-          qrCode: qrImage,
-        }))
+        QRCode.toBuffer(qrData)
+          .then((qrBuffer) => uploadQRToR2WithSignedUrl(qrBuffer, String(ticketId)))
+          .then((qrCodeUrl) => ({
+            _id: ticketId,
+            userId: String(stripeSession.metadata.userId),
+            eventId: String(stripeSession.metadata.eventId),
+            checkoutId: String(checkoutDoc._id),
+            qrCode: qrCodeUrl,
+          }))
       );
     }
 
@@ -252,7 +262,7 @@ const processCheckoutSession = async (stripeSession, req) => {
 
     // ? Send email notification asynchronously (don't block response)
 
-    sendOrderConfirmationEmail(stripeSession.customer_details.email, checkoutDoc, tickets, event).catch((err) => {
+    sendOrderConfirmationEmail(stripeSession.customer_details.email || user.email, checkoutDoc, tickets, event).catch((err) => {
       console.error("Failed to send confirmation email:", err);
     });
 

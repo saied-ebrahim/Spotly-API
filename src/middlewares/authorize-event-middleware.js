@@ -3,7 +3,7 @@ import AppError from "../utils/AppError.js";
 import Organizer from "../models/organizer-model.js";
 
 export const authorizeEventOrganizer = expressAsyncHandler(async (req, res, next) => {
-  // Allow admin to bypass organizer check - admin has full access
+  //? Allow admin to bypass organizer check - admin has full access
   if (req.user && req.user.role === "admin") {
     return next();
   }
