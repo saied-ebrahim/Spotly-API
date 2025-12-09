@@ -6,3 +6,27 @@ export default function generateToken(user) {
     refreshToken: jwt.sign({ id: user._id, email: user.email, name: `${user.firstName} ${user.lastName}`, role: user.role }, process.env.REFRESH_SECRET, { expiresIn: process.env.REFRESH_EXPIRES || "7d" }),
   };
 }
+
+/**
+ * Generate JWT token for ticket verification
+ * @param {Object} ticketData - Ticket data to encode
+ * @param {string} ticketData.ticketId - Ticket ID
+ * @param {string} ticketData.eventId - Event ID
+ * @param {string} ticketData.userId - User ID
+ * @returns {string} JWT token
+ */
+export function generateTicketToken({ ticketId, eventId, userId }) {
+  const ticketSecret = process.env.TICKET_JWT_SECRET || process.env.JWT_SECRET;
+  const ticketExpires = process.env.TICKET_JWT_EXPIRES || "365d"; // Default 1 year expiration
+  
+  return jwt.sign(
+    {
+      ticketId,
+      eventId,
+      userId,
+      type: "ticket",
+    },
+    ticketSecret,
+    { expiresIn: ticketExpires }
+  );
+}

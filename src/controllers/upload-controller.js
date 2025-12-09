@@ -1,5 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 import AppError from '../utils/AppError.js';
+import getSignedFileUrl from '../utils/getSignedFileUrl.js';
 
 // Handle file upload response (Express middleware)
 export const handleUpload = expressAsyncHandler(async (req, res, next) => {
