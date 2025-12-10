@@ -44,7 +44,7 @@ const webhookController = expressAsyncHandler(async (req, res) => {
  */
 const completeOrderController = expressAsyncHandler(async (req, res) => {
   const frontendUrl = process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app";
-  res.redirect(`${frontendUrl}/`);
+  res.redirect(`${frontendUrl}/receipt/${order_id}`);
 });
 
 /**

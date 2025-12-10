@@ -23,7 +23,7 @@ export function verifyTicketToken(token) {
     throw new AppError("No ticket token found", 401);
   }
 
-  const ticketSecret = process.env.TICKET_JWT_SECRET || process.env.JWT_SECRET;
+  const ticketSecret = process.env.TICKET_JWT_SECRET ;
   
   try {
     const decoded = jwt.verify(token, ticketSecret);
@@ -35,6 +35,8 @@ export function verifyTicketToken(token) {
     
     return decoded;
   } catch (error) {
+    console.log(error);
+    
     if (error.name === "TokenExpiredError") {
       throw new AppError("Ticket token has expired", 401);
     }

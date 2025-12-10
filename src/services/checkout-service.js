@@ -219,12 +219,13 @@ const processCheckoutSession = async (stripeSession, req) => {
     for (let i = 0; i < quantity; i++) {
       const ticketId = new mongoose.Types.ObjectId();
       // Generate JWT token for ticket verification (more secure than plain ticketId)
+      
       const ticketToken = generateTicketToken({
         ticketId: String(ticketId),
         eventId: String(stripeSession.metadata.eventId),
         userId: String(stripeSession.metadata.userId),
       });
-      const qrData = `${frontendUrl}/ticket/verify/${ticketToken}`;
+      const qrData = ticketToken;
 
       ticketPromises.push(
         QRCode.toBuffer(qrData)
