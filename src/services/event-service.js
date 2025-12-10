@@ -3,7 +3,7 @@ import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
 
 export const createEvent = async (eventData, userId) => {
-  if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.type || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.price || !eventData.ticketType.quantity) {
+  if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.type || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.quantity) {
     throw new AppError("Missing required fields", 400);
   }
 

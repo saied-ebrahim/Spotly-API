@@ -59,7 +59,7 @@ const EventSchema = new mongoose.Schema(
     ticketType: {
       ticketID: { type: String },
       title: { type: String },
-      price: { type: Number, required: [true, "Ticket type price is required"] },
+      price: { type: Number, default: 0 },
       quantity: { type: Number, required: [true, "Ticket type quantity is required"] },
       discount: { type: Number },
     },

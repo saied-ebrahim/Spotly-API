@@ -106,9 +106,8 @@ export const createEventValidation = Joi.object({
   }).optional(),
 
   ticketType: Joi.object({
-    price: Joi.number().required().messages({
+    price: Joi.number().optional().messages({
       "number.base": "Ticket type price must be a number",
-      "any.required": "Ticket type price is required",
     }),
     quantity: Joi.number().integer().min(0).required().messages({
       "number.base": "Ticket type quantity must be a number",
