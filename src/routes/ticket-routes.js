@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  generateQRCodeController,
-  verifyTicketController,
-  getTicketsByCheckoutController,
-  getTicketsByOrderController,
-  getTicketDetailsController,
-} from "../controllers/ticket-controller.js";
+import { generateQRCodeController, verifyTicketController, getTicketsByCheckoutController, getTicketsByOrderController, getTicketDetailsController } from "../controllers/ticket-controller.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 
 const router = express.Router();
@@ -52,4 +46,3 @@ router.get("/order/:orderId", authMiddleware, getTicketsByOrderController);
 router.get("/:ticketId", getTicketDetailsController);
 
 export default router;
-

@@ -7,7 +7,7 @@ export const createEvent = async (eventData, userId) => {
     throw new AppError("Missing required fields", 400);
   }
 
-  const event = await eventModel.create({ ...eventData, analytics: { ticketsAvailable: eventData.ticketType.quantity }, organizer: userId, ticketType: { title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity, image: "https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg" } });
+  const event = await eventModel.create({ ...eventData, analytics: { ticketsAvailable: eventData.ticketType.quantity }, organizer: userId, ticketType: { ticketID: `TICKET-${this.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}`, title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity, image: "https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg" } });
   if (!event) throw new AppError("Event not created", 500);
 
   const organizer = await organizerModel.create({ userID: userId, eventID: event._id });
@@ -57,14 +57,61 @@ export const getEventById = async (eventId) => {
 };
 
 export const updateEvent = async (eventId, updateData) => {
-  const { organizer, ...restUpdateData } = updateData;
-  const event = await eventModel.findByIdAndUpdate(eventId, restUpdateData, { new: true, runValidators: true }).populate("organizer").populate("category").populate("tags");
+  const event = await eventModel.findById(eventId);
   if (!event) throw new AppError("Event not found", 404);
 
+  const { organizer, ...restUpdateData } = updateData;
+
   if (restUpdateData.ticketType) {
-    event.analytics.ticketsAvailable = restUpdateData.ticketType.quantity;
+    event.ticketType = { ...event.ticketType.toObject(), ...restUpdateData.ticketType };
+    if (restUpdateData.ticketType.quantity) {
+      event.analytics = { ...event.analytics.toObject(), ticketsAvailable: restUpdateData.ticketType.quantity - event.analytics.ticketsSold };
+    }
+    delete restUpdateData.ticketType;
     await event.save();
   }
+
+  if (restUpdateData.title) {
+    console.log("B: Title", event.title);
+    event.title = restUpdateData.title;
+    console.log("A: Title", event.title);
+    event.ticketType = { ...event.ticketType.toObject(), title: `${restUpdateData.title}-ticket`, ticketID: `TICKET-${restUpdateData.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}` };
+    delete restUpdateData.title;
+    await event.save();
+  }
+
+  if (restUpdateData.type) {
+    if (restUpdateData.type === "online") {
+      event.type = restUpdateData.type;
+      event.location = undefined;
+    } else {
+      if (!restUpdateData.location) throw new AppError("Location is required for offline events", 400);
+      if (!restUpdateData.location.city || !restUpdateData.location.address || !restUpdateData.location.district) throw new AppError("Missing required location data", 400);
+      event.type = restUpdateData.type;
+      event.location = restUpdateData.location;
+      delete restUpdateData.location;
+    }
+    await event.save();
+  }
+
+  if (restUpdateData.location) {
+    if (event.type === "online") {
+      throw new AppError("Location data is not allowed for online events", 400);
+    } else {
+      event.location = { ...event.location.toObject(), ...restUpdateData.location };
+      delete restUpdateData.location;
+    }
+    await event.save();
+  }
+
+  if (restUpdateData.media) {
+    event.media = { ...event.media.toObject(), ...restUpdateData.media };
+    delete restUpdateData.media;
+    await event.save();
+  }
+
+  console.log(restUpdateData);
+  await event.updateOne({ $set: restUpdateData });
   return event;
 };
 
