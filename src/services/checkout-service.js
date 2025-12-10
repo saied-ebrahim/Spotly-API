@@ -75,7 +75,7 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
     shipping_address_collection: { allowed_countries: ["EG"] },
     expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
 
-    success_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
+    success_url: process.env.FRONTEND_URL + "/receipt?invoice_id=" + order._id,
     cancel_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
   });
 
@@ -219,12 +219,13 @@ const processCheckoutSession = async (stripeSession, req) => {
     for (let i = 0; i < quantity; i++) {
       const ticketId = new mongoose.Types.ObjectId();
       // Generate JWT token for ticket verification (more secure than plain ticketId)
+      
       const ticketToken = generateTicketToken({
         ticketId: String(ticketId),
         eventId: String(stripeSession.metadata.eventId),
         userId: String(stripeSession.metadata.userId),
       });
-      const qrData = `${frontendUrl}/ticket/verify/${ticketToken}`;
+      const qrData = ticketToken;
 
       ticketPromises.push(
         QRCode.toBuffer(qrData)

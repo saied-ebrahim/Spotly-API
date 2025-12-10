@@ -50,7 +50,7 @@ export const generateQRCodeService = async (ticketId, user = null) => {
   }
 
   // توليد QR Code جديد باستخدام JWT token (متوافق مع checkout-service)
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+  // const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
   // Generate JWT token for ticket verification
   const ticketEventId = ticket.eventId?._id || ticket.eventId;
@@ -62,7 +62,9 @@ export const generateQRCodeService = async (ticketId, user = null) => {
     userId: String(ticketUserId),
   });
 
-  const qrData = `${frontendUrl}/ticket/verify/${ticketToken}`;
+  // const qrData = `${frontendUrl}/ticket/verify/${ticketToken}`;
+  const qrData = ticketToken;
+
   const qrBuffer = await QRCode.toBuffer(qrData);
 
   // Upload QR code to R2 (consistent with checkout-service)

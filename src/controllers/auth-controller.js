@@ -23,7 +23,7 @@ export const signUpController = expressAsyncHandler(async (req, res) => {
 export const loginController = expressAsyncHandler(async (req, res) => {
   const loginData = req.body;
   const { accessToken, refreshToken } = await loginService(loginData);
-  res.cookie("token", refreshToken, getCookieOptions());
+  res.cookie("sub", refreshToken, getCookieOptions());
   res.status(200).json({ message: "Login successful", token: accessToken });
 });
 
@@ -47,10 +47,10 @@ export const refreshTokenController = expressAsyncHandler(async (req, res) => {
   try {
     const decoded = verifyToken(token, process.env.REFRESH_SECRET);
     const { accessToken, refreshToken } = await refreshTokenService({ refreshToken: { ...decoded, rawToken: token }, deviceID });
-    res.cookie("token", refreshToken, getCookieOptions());
+    res.cookie("sub", refreshToken, getCookieOptions());
     res.status(200).json({ message: "Token refreshed successfully", token: accessToken });
   } catch (error) {
-    res.clearCookie("token");
+    res.clearCookie("sub");
     throw error;
   }
 });
@@ -77,11 +77,11 @@ export const logoutController = expressAsyncHandler(async (req, res) => {
 
     await logoutService({ userEmail: decoded.email, deviceID, refreshToken: token });
 
-    res.clearCookie("token");
+    res.clearCookie("sub");
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.log(error);
-    res.clearCookie("token");
+    res.clearCookie("sub");
     throw error;
   }
 });
@@ -101,10 +101,10 @@ export const logoutAllController = expressAsyncHandler(async (req, res) => {
   try {
     const decoded = verifyToken(token, process.env.REFRESH_SECRET);
     await logoutAllService(decoded.email);
-    res.clearCookie("token");
+    res.clearCookie("sub");
     res.status(200).json({ message: "Logout from all devices successful" });
   } catch (error) {
-    res.clearCookie("token");
+    res.clearCookie("sub");
     throw error;
   }
 });
