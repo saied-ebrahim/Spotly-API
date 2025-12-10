@@ -3,7 +3,6 @@ import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
 
 export const createEvent = async (eventData, userId) => {
-  console.log(eventData.title);
   if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.type || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.price || !eventData.ticketType.quantity) {
     throw new AppError("Missing required fields", 400);
   }
@@ -21,10 +20,54 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
   const skip = (page - 1) * limit;
   const sortOrder = order === "asc" ? 1 : -1;
 
-  const query = {};
-  if (search) query.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }];
-  if (category) query.category = category;
-  if (tag) query.tags = tag;
+  const result = await eventModel.aggregate([
+    {
+      $lookup: {
+        from: "categories",
+        localField: "category",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $lookup: {
+        from: "tags",
+        localField: "tags",
+        foreignField: "_id",
+        as: "tag",
+      },
+    },
+    { $unwind: "$category" },
+    { $unwind: "$tag" },
+  ]);
+
+  let arrayIDS = [];
+
+  if (search) {
+    result.forEach((doc) => {
+      if (doc.title.toLowerCase().includes(search.toLowerCase()) || doc.description.toLowerCase().includes(search.toLowerCase())) {
+        arrayIDS.push(doc._id);
+      }
+    });
+  }
+
+  if (category) {
+    result.forEach((doc) => {
+      if (doc.category.name.toLowerCase() === category.toLowerCase()) {
+        arrayIDS.push(doc._id);
+      }
+    });
+  }
+
+  if (tag) {
+    result.forEach((doc) => {
+      if (doc.tag.name.toLowerCase() === tag.toLowerCase()) {
+        arrayIDS.push(doc._id);
+      }
+    });
+  }
+
+  let query = search || category || tag ? { _id: { $in: arrayIDS } } : {};
 
   const events = await eventModel
     .find(query)
@@ -73,9 +116,7 @@ export const updateEvent = async (eventId, updateData) => {
   }
 
   if (restUpdateData.title) {
-    console.log("B: Title", event.title);
     event.title = restUpdateData.title;
-    console.log("A: Title", event.title);
     event.ticketType = { ...event.ticketType.toObject(), title: `${restUpdateData.title}-ticket`, ticketID: `TICKET-${restUpdateData.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}` };
     delete restUpdateData.title;
     await event.save();
@@ -111,7 +152,6 @@ export const updateEvent = async (eventId, updateData) => {
     await event.save();
   }
 
-  console.log(restUpdateData);
   await event.updateOne({ $set: restUpdateData });
   return event;
 };
