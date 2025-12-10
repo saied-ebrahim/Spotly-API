@@ -3,6 +3,7 @@ import AppError from "../utils/AppError.js";
 import userModel from "../models/user-model.js";
 import generateToken from "../utils/generateToken.js";
 import { MAX_REFRESH_TOKENS_PER_USER } from "../utils/constants.js";
+import { blacklistToken } from "../utils/redis-client.js";
 
 export const signUpService = async (userData) => {
   const { firstName, lastName, gender, phone, address, email, password } = userData;
@@ -83,7 +84,7 @@ export const refreshTokenService = async ({ refreshToken, deviceID }) => {
   return { accessToken, refreshToken: newRefreshToken };
 };
 
-export const logoutService = async ({ userEmail, deviceID, refreshToken }) => {
+export const logoutService = async ({ userEmail, deviceID, refreshToken, accessToken }) => {
   const user = await userModel.findOne({ email: userEmail });
   if (!user) {
     throw new AppError("User does not exist", 404);
@@ -99,6 +100,11 @@ export const logoutService = async ({ userEmail, deviceID, refreshToken }) => {
     user.refreshTokens = user.refreshTokens.filter((t) => t.deviceID !== deviceID);
     await user.save();
     throw new AppError("Invalid token", 401);
+  }
+
+  // Blacklist the access token if provided
+  if (accessToken) {
+    await blacklistToken(accessToken);
   }
 
   user.refreshTokens = user.refreshTokens.filter((t) => t.deviceID !== deviceID);

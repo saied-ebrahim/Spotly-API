@@ -63,6 +63,12 @@ export const refreshTokenController = expressAsyncHandler(async (req, res) => {
 export const logoutController = expressAsyncHandler(async (req, res) => {
   const { deviceID } = req.body;
   const { token } = req.cookies;
+  
+  // Get access token from Authorization header if available
+  let accessToken = null;
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    accessToken = req.headers.authorization.split(" ")[1];
+  }
 
   if (!deviceID) {
     throw new AppError("Device ID is required", 400);
@@ -75,7 +81,7 @@ export const logoutController = expressAsyncHandler(async (req, res) => {
   try {
     const decoded = verifyToken(token, process.env.REFRESH_SECRET);
 
-    await logoutService({ userEmail: decoded.email, deviceID, refreshToken: token });
+    await logoutService({ userEmail: decoded.email, deviceID, refreshToken: token, accessToken });
 
     res.clearCookie("token");
     res.status(200).json({ message: "Logout successful" });

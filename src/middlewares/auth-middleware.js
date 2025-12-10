@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
 import userModel from "../models/user-model.js";
+import { isTokenBlacklisted } from "../utils/redis-client.js";
 
 export const authMiddleware = expressAsyncHandler(async (req, res, next) => {
   let token;
@@ -11,6 +12,12 @@ export const authMiddleware = expressAsyncHandler(async (req, res, next) => {
 
   if (!token) {
     return next(new AppError("You are not logged in! Please log in to get access.", 401));
+  }
+
+  // Check if token is blacklisted (logged out)
+  const isBlacklisted = await isTokenBlacklisted(token);
+  if (isBlacklisted) {
+    return next(new AppError("This token has been invalidated. Please log in again.", 401));
   }
 
   let decoded;
