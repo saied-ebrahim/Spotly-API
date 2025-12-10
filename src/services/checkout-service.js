@@ -75,7 +75,7 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
     shipping_address_collection: { allowed_countries: ["EG"] },
     expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
 
-    success_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
+    success_url: process.env.FRONTEND_URL + "/receipt/" + order._id || "https://spotly-clinet.vercel.app",
     cancel_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
   });
 
