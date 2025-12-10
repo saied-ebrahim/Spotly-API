@@ -8,7 +8,7 @@ import ordersRoutes from "../routes/orders-routes.js";
 
 const router = express.Router();
 router.use("/orders", ordersRoutes);
-router.get("/", getAllEvents);
+router.get("/all", getAllEvents);
 router.get("/:id", getEventById);
 router.post("/", authMiddleware, validateMiddleware(createEventValidation), createEvent);
 router.patch("/:id", authMiddleware, authorizeEventOrganizer, validateMiddleware(updateEventValidation), updateEvent);
