@@ -22,7 +22,7 @@ export const createEvent = expressAsyncHandler(async (req, res, next) => {
  * @query  page, limit, search, category, tag, sort, order
  */
 export const getAllEvents = expressAsyncHandler(async (req, res, next) => {
-  const { page, limit, search, category, tag, sort, order } = req.query;
+  const { page, limit, search, category, tag, sort, order, type } = req.query;
   const result = await eventService.getAllEvents({
     page: page ? parseInt(page) : 1,
     limit: limit ? parseInt(limit) : 10,
@@ -31,6 +31,7 @@ export const getAllEvents = expressAsyncHandler(async (req, res, next) => {
     tag: tag || "",
     sort: sort || "createdAt",
     order: order || "asc",
+    type: type || "",
   });
 
   res.status(200).json({

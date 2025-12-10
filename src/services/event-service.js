@@ -16,7 +16,7 @@ export const createEvent = async (eventData, userId) => {
   return event;
 };
 
-export const getAllEvents = async ({ page = 1, limit = 10, search = "", category = "", tag = "", sort = "createdAt", order = "desc" } = {}) => {
+export const getAllEvents = async ({ page = 1, limit = 10, search = "", category = "", tag = "", type = "", sort = "createdAt", order = "desc" } = {}) => {
   const skip = (page - 1) * limit;
   const sortOrder = order === "asc" ? 1 : -1;
 
@@ -67,7 +67,15 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
     });
   }
 
-  let query = search || category || tag ? { _id: { $in: arrayIDS } } : {};
+  if (type) {
+    result.forEach((doc) => {
+      if (doc.type.toLowerCase() === type.toLowerCase()) {
+        arrayIDS.push(doc._id);
+      }
+    });
+  }
+
+  let query = search || category || tag || type ? { _id: { $in: arrayIDS } } : {};
 
   const events = await eventModel
     .find(query)
