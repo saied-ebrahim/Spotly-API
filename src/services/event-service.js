@@ -68,27 +68,50 @@ export const updateEvent = async (eventId, updateData) => {
       event.analytics = { ...event.analytics.toObject(), ticketsAvailable: restUpdateData.ticketType.quantity - event.analytics.ticketsSold };
     }
     delete restUpdateData.ticketType;
+    await event.save();
   }
 
   if (restUpdateData.title) {
+    console.log("B: Title", event.title);
     event.title = restUpdateData.title;
+    console.log("A: Title", event.title);
     event.ticketType = { ...event.ticketType.toObject(), title: `${restUpdateData.title}-ticket`, ticketID: `TICKET-${restUpdateData.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}` };
     delete restUpdateData.title;
+    await event.save();
+  }
+
+  if (restUpdateData.type) {
+    if (restUpdateData.type === "online") {
+      event.type = restUpdateData.type;
+      event.location = undefined;
+    } else {
+      if (!restUpdateData.location) throw new AppError("Location is required for offline events", 400);
+      if (!restUpdateData.location.city || !restUpdateData.location.address || !restUpdateData.location.district) throw new AppError("Missing required location data", 400);
+      event.type = restUpdateData.type;
+      event.location = restUpdateData.location;
+      delete restUpdateData.location;
+    }
+    await event.save();
   }
 
   if (restUpdateData.location) {
-    event.location = { ...event.location.toObject(), ...restUpdateData.location };
-    delete restUpdateData.location;
+    if (event.type === "online") {
+      throw new AppError("Location data is not allowed for online events", 400);
+    } else {
+      event.location = { ...event.location.toObject(), ...restUpdateData.location };
+      delete restUpdateData.location;
+    }
+    await event.save();
   }
 
   if (restUpdateData.media) {
     event.media = { ...event.media.toObject(), ...restUpdateData.media };
     delete restUpdateData.media;
+    await event.save();
   }
 
-  Object.assign({ ...event.toObject() }, restUpdateData);
-  await event.save();
-
+  console.log(restUpdateData);
+  await event.updateOne({ $set: restUpdateData });
   return event;
 };
 
