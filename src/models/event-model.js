@@ -61,7 +61,6 @@ const EventSchema = new mongoose.Schema(
       title: { type: String },
       price: { type: Number, required: [true, "Ticket type price is required"] },
       quantity: { type: Number, required: [true, "Ticket type quantity is required"] },
-      image: { type: String },
       discount: { type: Number },
     },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag", required: [true, "At least one tag is required"] }],
@@ -71,10 +70,10 @@ const EventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-EventSchema.pre("save", function (next) {
-  if (!this.ticketType.ticketID) this.ticketType.ticketID = `TICKET-${this.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}`;
-  next();
-});
+// EventSchema.pre("save", function (next) {
+//   if (!this.ticketType.ticketID) this.ticketType.ticketID = `TICKET-${this.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}`;
+//   next();
+// });
 
 EventSchema.path("analytics.ticketsAvailable").validate({
   validator: function (value) {
