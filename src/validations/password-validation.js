@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const forgetPasswordSchema = Joi.object({
+const forgotPasswordSchema = Joi.object({
   email: Joi.string().email().required().messages({
     "any.required": "Email is required",
     "string.email": "Email is invalid",
@@ -16,4 +16,4 @@ const resetPasswordSchema = Joi.object({
   }),
 });
 
-export { forgetPasswordSchema, resetPasswordSchema };
+export { forgotPasswordSchema, resetPasswordSchema };

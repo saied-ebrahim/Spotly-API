@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --background-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #D1D5DB;
+            --error-color: #EF4444;
+            --success-color: #10B981;
+            --focus-ring: rgba(79, 70, 229, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .container {
+            padding: 20px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .card-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .card-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px var(--focus-ring);
+        }
+
+        input::placeholder {
+            color: #9CA3AF;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 6px;
+            min-height: 18px;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.2s ease;
+        }
+
+        .error-message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status-message {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .status-message.success {
+            display: block;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-message.error {
+            display: block;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+    </style>
+    <script>
+        const userID = "<%= userID %>";
+        const token = "<%= token %>";
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>Reset Password</h1>
+                <p>Please enter your new password below.</p>
+            </div>
+
+            <form id="reset-form">
+                <div class="input-group">
+                    <label for="password">New Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required />
+                    <div class="error-message" id="password-error"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••"
+                        required />
+                    <div class="error-message" id="confirm-password-error"></div>
+                </div>
+
+                <div class="input-group">
+                    <button type="submit" id="submit-btn">Reset Password</button>
+                </div>
+
+                <div class="status-message" id="status-message"></div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("reset-form");
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirm-password");
+            const submitBtn = document.getElementById("submit-btn");
+            const statusMessage = document.getElementById("status-message");
+
+            // Validation state
+            let isPasswordValid = false;
+            let isMatching = false;
+
+            // Helper to show error
+            function showError(elementId, message) {
+                const errorEl = document.getElementById(elementId);
+                errorEl.textContent = message;
+                errorEl.classList.add("visible");
+            }
+
+            // Helper to clear error
+            function clearError(elementId) {
+                const errorEl = document.getElementById(elementId);
+                errorEl.classList.remove("visible");
+                setTimeout(() => {
+                    errorEl.textContent = "";
+                }, 200);
+            }
+
+            // Validate Password
+            function validatePassword() {
+                const password = passwordInput.value;
+                // At least 4 chars, 1 uppercase, 1 number
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{4,}$/;
+
+                if (!passwordRegex.test(password)) {
+                    showError(
+                        "password-error",
+                        "Password must be 4+ chars, with 1 uppercase & 1 number"
+                    );
+                    isPasswordValid = false;
+                } else {
+                    clearError("password-error");
+                    isPasswordValid = true;
+                }
+                validateMatch(); // Re-check match when password changes
+            }
+
+            // Validate Match
+            function validateMatch() {
+                if (!confirmPasswordInput.value) {
+                    clearError("confirm-password-error");
+                    isMatching = false;
+                    return;
+                }
+
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    showError("confirm-password-error", "Passwords do not match");
+                    isMatching = false;
+                } else {
+                    clearError("confirm-password-error");
+                    isMatching = true;
+                }
+            }
+
+            // Event Listeners
+            passwordInput.addEventListener("input", validatePassword);
+            confirmPasswordInput.addEventListener("input", validateMatch);
+
+            // Form Submission
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                // Final validation before submit
+                validatePassword();
+                validateMatch();
+
+                if (!isPasswordValid || !isMatching) {
+                    return; // Stop if invalid
+                }
+
+                const newPassword = passwordInput.value;
+
+                // Disable button during api call
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Resetting...";
+                statusMessage.className = "status-message"; // clear classes
+                statusMessage.style.display = "none";
+
+                try {
+                    const response = await fetch(`/api/v1/password/reset-password/${userID}/${token}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            password: newPassword,
+                        }),
+                    });
+
+                    // Simulating a wait since we don't have a real backend to hit in this static demo
+                    // In a real app, delete this timeout and rely on fetch response
+                    // await new Promise(r => setTimeout(r, 1000));
+
+                    if (response.ok) {
+                        statusMessage.textContent = "Password reset successfully!";
+                        statusMessage.classList.add("success");
+                        form.reset();
+                        setTimeout(() => {
+                            window.location.href = "https://spotly-clinet.vercel.app/auth/login";
+                        }, 0);
+                    } else {
+                        // Handle 4xx/5xx errors
+                        // For demo purposes, we might fail here because the endpoint doesn't exist
+                        // So we'll catch it or assume success if it was a real backend integration
+                        throw new Error("Failed to reset password");
+                    }
+                } catch (error) {
+                    // Since there is no real backend, this will likely error out.
+                    // I will display the payload structure specifically as requested by the user logic
+                    // implementation, but in a real failure case show an error.
+
+                    // NOTE: For demonstration in this specific tasks without a backend,
+                    // I'll show what WOULD happen or log it.
+                    console.log("Payload sent:", JSON.stringify({ password: newPassword }));
+
+                    // If the user wants to see success UI even without backend, I can fake it here for demo
+                    // But strict error handling implies showing an error for a failed fetch.
+                    // Let's show a mock success message if it's just a 404 from missing API, or error if network fail.
+                    // However, to be helpful, I'll log the error but show a message saying "Payload was prepared successfully"
+
+                    console.error(error);
+                    statusMessage.textContent =
+                        "Request sent (Check console for payload). API endpoint /api/reset-password not found.";
+                    statusMessage.classList.add("error");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Reset Password";
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>

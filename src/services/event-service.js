@@ -1,9 +1,10 @@
 import AppError from "../utils/AppError.js";
 import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
+import userModel from "../models/user-model.js";
 
 export const createEvent = async (eventData, userId) => {
-  if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.type || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.price || !eventData.ticketType.quantity) {
+  if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.type || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.quantity) {
     throw new AppError("Missing required fields", 400);
   }
 
@@ -16,7 +17,7 @@ export const createEvent = async (eventData, userId) => {
   return event;
 };
 
-export const getAllEvents = async ({ page = 1, limit = 10, search = "", category = "", tag = "", sort = "createdAt", order = "desc" } = {}) => {
+export const getAllEvents = async ({ page = 1, limit = 10, search = "", category = "", tag = "", type = "", sort = "createdAt", order = "desc" } = {}) => {
   const skip = (page - 1) * limit;
   const sortOrder = order === "asc" ? 1 : -1;
 
@@ -67,7 +68,15 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
     });
   }
 
-  let query = search || category || tag ? { _id: { $in: arrayIDS } } : {};
+  if (type) {
+    result.forEach((doc) => {
+      if (doc.type.toLowerCase() === type.toLowerCase()) {
+        arrayIDS.push(doc._id);
+      }
+    });
+  }
+
+  let query = search || category || tag || type ? { _id: { $in: arrayIDS } } : {};
 
   const events = await eventModel
     .find(query)
@@ -161,4 +170,36 @@ export const deleteEvent = async (eventId) => {
   if (!event) throw new AppError("Event not found", 404);
   await organizerModel.findOneAndDelete({ eventID: eventId });
   return event;
+};
+
+export const getRevEvents = async (userID) => {
+  const user = await userModel.findById(userID);
+  if(!user) throw new AppError("User not found", 404);
+
+  let totalRevenue;
+
+  if(user.role == "admin") {
+    const events = await eventModel.find();
+    totalRevenue = events.reduce((total, event) => total + event.analytics.totalRevenue, 0);
+    return totalRevenue;
+  }
+
+  const events = await eventModel.find({ organizer: user._id });
+  totalRevenue = events.reduce((total, event) => total + event.analytics.totalRevenue, 0);
+  return totalRevenue;
+
+};
+
+export const getEventRevenue = async (userID, eventID) => {
+  const user = await userModel.findById(userID);
+  if(!user) throw new AppError("User not found", 404);
+
+  const event = await eventModel.findById(eventID);
+  if(!event) throw new AppError("Event not found", 404);
+
+  if(user.role == "admin" || user._id == event.organizer) {
+    return event.analytics.totalRevenue;
+  } else {
+    throw new AppError("You are not authorized to get this event revenue", 403);
+  }
 };

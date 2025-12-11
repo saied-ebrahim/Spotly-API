@@ -1,16 +1,16 @@
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
-import { forgetPasswordService, resetPasswordLinkService, resetPasswordService } from "../services/password-service.js";
+import { forgotPasswordService, resetPasswordLinkService, resetPasswordService } from "../services/password-service.js";
 
 /**
  * @desc   Forget password
- * @route  POST /api/v1/password/forget-password
+ * @route  POST /api/v1/password/forgot-password
  * @access Public
  */
-export const forgetPasswordController = expressAsyncHandler(async (req, res) => {
+export const forgotPasswordController = expressAsyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email) throw new AppError("Email is required", 400);
-  const link = await forgetPasswordService(req, email);
+  const link = await forgotPasswordService(req, email);
   res.status(200).json({ message: "Check your email for password reset instructions", link });
 });
 
@@ -18,12 +18,12 @@ export const forgetPasswordController = expressAsyncHandler(async (req, res) => 
  * @desc   Reset password link
  * @route  GET /api/v1/password/reset-password-link/:userID/:token
  * @access Public
- * @note This route direct user to reset password page "Form"
+ * @note  Redirect to reset password page
  */
 export const resetPasswordLinkController = expressAsyncHandler(async (req, res) => {
   const { userID } = req.params;
-  const user = await resetPasswordLinkService(userID, req.params.token);
-  res.status(200).json({ message: "User data", user });
+  const { token } = await resetPasswordLinkService(userID, req.params.token);
+  res.render("index", { userID, token });
 });
 
 /**
@@ -32,9 +32,9 @@ export const resetPasswordLinkController = expressAsyncHandler(async (req, res) 
  * @access Public
  */
 export const resetPasswordController = expressAsyncHandler(async (req, res) => {
-  const { userID } = req.params;
+  const { userID, token } = req.params;
   const { password } = req.body;
   if (!password) throw new AppError("Password is required", 400);
-  await resetPasswordService(userID, req.params.token, password);
-  res.status(200).json({ message: "Password reset successfully, Please login again" });
+  await resetPasswordService(userID, token, password);
+  res.status(200).json({ message: "Password reset successfully" });
 });
