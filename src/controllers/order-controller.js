@@ -6,7 +6,6 @@ import * as orderService from "../services/order-service.js";
 // @access Private
 export const getAllOrders = expressAsyncHandler(async (req, res) => {
   const { search } = req.query;
-  console.log(search);
   const orders = await orderService.getAllOrders({ search: search || "" });
   res.status(200).json({ status: "success", data: { orders } });
 });

@@ -2,6 +2,8 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 
 // ? Middlewares
@@ -26,7 +28,10 @@ import swaggerSpec from "./config/swagger.js";
 
 // ! App
 const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 app.use(cors());
 app.use((req, res, next) => {
   req.originalUrl === "/api/v1/checkout/webhook" ? express.raw({ type: "application/json" })(req, res, next) : express.json()(req, res, next);
@@ -41,7 +46,7 @@ const apiV1 = express.Router();
 app.use("/api/v1", apiV1);
 
 // ! Routes
-apiV1.get("/", (_, res) => {
+apiV1.get("/welcome", (_, res) => {
   res.json({ message: "Welcome to Spotly API v1 (Spotly Backend)" });
 });
 apiV1.use("/auth", authRoutes);

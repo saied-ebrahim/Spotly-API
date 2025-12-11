@@ -5,7 +5,7 @@ import userModel from "../models/user-model.js";
 import verifyToken from "../utils/verifyRefreshToken.js";
 import { sendEmail } from "../utils/emailSender.js";
 
-export const forgetPasswordService = async (req, email) => {
+export const forgotPasswordService = async (req, email) => {
   const user = await userModel.findOne({ email });
   if (!user) throw new AppError("User does not exist", 404);
 
@@ -25,7 +25,7 @@ export const resetPasswordLinkService = async (userID, token) => {
   const secret = process.env.JWT_SECRET + user.password;
   const decoded = verifyToken(token, secret);
   if (!decoded) throw new AppError("Invalid token", 400);
-  return { email: user.email };
+  return { token };
 };
 
 export const resetPasswordService = async (userID, token, password) => {
