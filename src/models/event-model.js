@@ -53,6 +53,8 @@ const EventSchema = new mongoose.Schema(
       ticketsAvailable: { type: Number, default: 0 },
       totalRevenue: { type: Number, default: 0 },
       waitingListCount: { type: Number, default: 0 },
+      netIncomeAdmin: { type: Number, default: 0 },
+      netIncomeOrganizer: { type: Number, default: 0 },
       likes: { type: Number, default: 0 },
       dislikes: { type: Number, default: 0 },
     },

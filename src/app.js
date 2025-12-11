@@ -71,12 +71,7 @@ app.all("*", (req, res) => {
     message: `Can't find ${req.originalUrl} on this server!`,
   });
 });
-app.use("/", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Welcome to Spotly API (Spotly Backend)",
-  });
-});
+
 // ! Error Handler
 app.use(errorHandler);
 

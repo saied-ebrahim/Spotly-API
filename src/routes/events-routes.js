@@ -1,5 +1,5 @@
 import express from "express";
-import { createEvent, getAllEvents, getEventById, updateEvent, deleteEvent } from "../controllers/event-controller.js";
+import { createEvent, getAllEvents, getEventById, getRevenue, getEventRevenue,updateEvent, deleteEvent } from "../controllers/event-controller.js";
 import validateMiddleware from "../middlewares/validation-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 import { authorizeEventOrganizer } from "../middlewares/authorize-event-middleware.js";
@@ -10,6 +10,8 @@ const router = express.Router();
 router.use("/orders", ordersRoutes);
 router.get("/", getAllEvents);
 router.get("/:id", getEventById);
+router.get("/revenue", authMiddleware, getRevenue);
+router.get("/:id/revenue", authMiddleware, getEventRevenue);
 router.post("/", authMiddleware, validateMiddleware(createEventValidation), createEvent);
 router.patch("/:id", authMiddleware, authorizeEventOrganizer, validateMiddleware(updateEventValidation), updateEvent);
 router.delete("/:id", authMiddleware, authorizeEventOrganizer, deleteEvent);
