@@ -10,7 +10,7 @@ router.get("/net-income", authMiddleware, getNetIncome);
 router.get("/:id/net-income", authMiddleware, getEventNetIncome);
 router.get("/tickets-sold", authMiddleware, getTicketsSold);
 router.get("/:id/tickets-sold", authMiddleware, getEventTicketsSold);
-router.get("/tickets-available", authMiddleware, getTicketsAvailable);
-router.get("/:id/tickets-available", authMiddleware, getEventTicketsAvailable);
+router.get("/tickets-available", getTicketsAvailable);
+router.get("/:id/tickets-available", getEventTicketsAvailable);
 
 export default router;

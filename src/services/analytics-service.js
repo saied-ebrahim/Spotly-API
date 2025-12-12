@@ -98,11 +98,7 @@ export const getEventTicketsSold = async (userID, eventID) => {
   return ticketsSoldValue;
 };
 
-export const getTicketsAvailable = async (userID) => {
-  const user = await UserModel.findById(userID);
-  if (!user) throw new AppError("User not found", 404);
-
- if(user.role !== "admin") throw new AppError("You are not authorized to access this event", 403);
+export const getTicketsAvailable = async () => {
 
   const ticketsAvailable = await AnalyticsModel.find();
   const totalTicketsAvailable = ticketsAvailable.reduce((total, event) => total + event.ticketsAvailable, 0);
@@ -112,13 +108,9 @@ export const getTicketsAvailable = async (userID) => {
   return totalTicketsAvailable;
 };
 
-export const getEventTicketsAvailable = async (userID, eventID) => {
-  const user = await userModel.findById(userID);
-  if (!user) throw new AppError("User not found", 404);
-
+export const getEventTicketsAvailable = async (eventID) => {
   const event = await eventModel.findById(eventID);
   if (!event) throw new AppError("Event not found", 404);
-  if (event.organizer.toString() !== userID && user.role !== "admin") throw new AppError("You are not authorized to access this event", 401);
 
   const ticketsAvailable = await AnalyticsModel.findOne({ eventID });
   const ticketsAvailableValue = ticketsAvailable.ticketsAvailable;
