@@ -14,8 +14,6 @@ export const getRevenue = async (userID) => {
   const revenue = await AnalyticsModel.find(query);
   const totalRevenue = revenue.reduce((total, event) => total + event.revenue, 0);
 
-  console.log(">>> totalRevenue", totalRevenue);
-
   return totalRevenue;
 };
 
@@ -28,8 +26,6 @@ export const getEventRevenue = async (userID, eventID) => {
   if (event.organizer.toString() !== userID && user.role !== "admin") throw new AppError("You are not authorized to access this event", 401);
 
   const revenue = await AnalyticsModel.findOne({ eventID });
-
-  console.log(">>> totalRevenue", revenue.revenue);
 
   return revenue.revenue;
 };
@@ -44,8 +40,6 @@ export const getNetIncome = async (userID) => {
 
   const netIncome = await AnalyticsModel.find(query);
   const totalNetIncome = netIncome.reduce((total, event) => total + (role ? event.netIncomeAdmin : event.netIncomeOrganizer), 0);
-
-  console.log(">>> totalNetIncome", totalNetIncome);
 
   return totalNetIncome;
 };
@@ -63,8 +57,6 @@ export const getEventNetIncome = async (userID, eventID) => {
   const netIncome = await AnalyticsModel.findOne({ eventID });
   const netIncomeValue = role ? netIncome.netIncomeAdmin : netIncome.netIncomeOrganizer;
 
-  console.log(">>> totalNetIncome", netIncomeValue);
-
   return netIncomeValue;
 };
 
@@ -76,8 +68,6 @@ export const getTicketsSold = async (userID) => {
 
   const ticketsSold = await AnalyticsModel.find();
   const totalTicketsSold = ticketsSold.reduce((total, event) => total + event.ticketsSold, 0);
-
-  console.log(">>> totalTicketsSold", totalTicketsSold);
 
   return totalTicketsSold;
 };
@@ -93,8 +83,6 @@ export const getEventTicketsSold = async (userID, eventID) => {
   const ticketsSold = await AnalyticsModel.findOne({ eventID });
   const ticketsSoldValue = ticketsSold.ticketsSold;
 
-  console.log(">>> totalTicketsSold", ticketsSoldValue);
-
   return ticketsSoldValue;
 };
 
@@ -102,8 +90,6 @@ export const getTicketsAvailable = async () => {
 
   const ticketsAvailable = await AnalyticsModel.find();
   const totalTicketsAvailable = ticketsAvailable.reduce((total, event) => total + event.ticketsAvailable, 0);
-
-  console.log(">>> totalTicketsAvailable", totalTicketsAvailable);
 
   return totalTicketsAvailable;
 };
@@ -114,8 +100,6 @@ export const getEventTicketsAvailable = async (eventID) => {
 
   const ticketsAvailable = await AnalyticsModel.findOne({ eventID });
   const ticketsAvailableValue = ticketsAvailable.ticketsAvailable;
-
-  console.log(">>> totalTicketsAvailable", ticketsAvailableValue);
 
   return ticketsAvailableValue;
 };

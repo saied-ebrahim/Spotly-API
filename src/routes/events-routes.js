@@ -12,8 +12,6 @@ router.use("/orders", ordersRoutes);
 router.use("/analytics", analyticsRoutes);
 router.get("/", getAllEvents);
 router.get("/:id", getEventById);
-// router.get("/revenue", authMiddleware, getRevenue);
-// router.get("/:id/revenue", authMiddleware, getEventRevenue);
 router.post("/", authMiddleware, validateMiddleware(createEventValidation), createEvent);
 router.patch("/:id", authMiddleware, authorizeEventOrganizer, validateMiddleware(updateEventValidation), updateEvent);
 router.delete("/:id", authMiddleware, authorizeEventOrganizer, deleteEvent);

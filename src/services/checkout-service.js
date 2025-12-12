@@ -260,6 +260,8 @@ const processCheckoutSession = async (stripeSession, req) => {
       eventAnalytics.ticketsSold = (eventAnalytics.ticketsSold || 0) + quantity;
       eventAnalytics.ticketsAvailable = (eventAnalytics.ticketsAvailable || 0) - quantity;
       eventAnalytics.revenue = (eventAnalytics.revenue || 0) + (stripeSession.amount_total / 100);
+      eventAnalytics.netIncomeAdmin += (event.ticketType.price * quantity) * (15 / 100);
+      eventAnalytics.netIncomeOrganizer += (event.ticketType.price * quantity) - (event.ticketType.price * quantity) * (15 / 100);
       await eventAnalytics.save({ session: session_db });
 
       // ? Commit transaction
