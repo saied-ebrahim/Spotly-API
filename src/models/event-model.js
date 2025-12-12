@@ -48,7 +48,7 @@ const EventSchema = new mongoose.Schema(
       longitude: { type: Number },
     },
     media: { mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } },
-    analytics: { type: mongoose.Schema.Types.ObjectId, ref: "Analytics", required: [true, "Event analytics is required"] },
+    analytics: { type: mongoose.Schema.Types.ObjectId, ref: "Analytics" },
     ticketType: {
       ticketID: { type: String },
       title: { type: String },

@@ -87,24 +87,6 @@ export const createEventValidation = Joi.object({
     }),
   }).optional(),
 
-  // analytics: Joi.object({
-  //   ticketsAvailable: Joi.number().integer().min(0).optional().messages({
-  //     "number.base": "ticketsAvailable must be a number",
-  //     "number.integer": "ticketsAvailable must be an integer",
-  //     "number.min": "ticketsAvailable must be a non-negative integer",
-  //   }),
-  //   ticketsSold: Joi.number().integer().min(0).optional().messages({
-  //     "number.base": "ticketsSold must be a number",
-  //     "number.integer": "ticketsSold must be an integer",
-  //     "number.min": "ticketsSold must be a non-negative integer",
-  //   }),
-  //   image: Joi.string().required().trim().messages({
-  //     "string.base": "Ticket type image must be a string",
-  //     "string.empty": "Ticket type image is required",
-  //     "any.required": "Ticket type image is required",
-  //   }),
-  // }).optional(),
-
   ticketType: Joi.object({
     price: Joi.number().optional().messages({
       "number.base": "Ticket type price must be a number",

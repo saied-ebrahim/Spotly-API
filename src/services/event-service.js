@@ -1,14 +1,21 @@
 import AppError from "../utils/AppError.js";
 import eventModel from "../models/event-model.js";
 import organizerModel from "../models/organizer-model.js";
+import analyticsModel from "../models/analytics-model.js";
 
 export const createEvent = async (eventData, userId) => {
   if (!userId || !eventData.title || !eventData.description || !eventData.date || !eventData.time || !eventData.type || !eventData.media || !eventData.tags || !eventData.category || !eventData.ticketType.quantity) {
     throw new AppError("Missing required fields", 400);
   }
 
-  const event = await eventModel.create({ ...eventData, analytics: { ticketsAvailable: eventData.ticketType.quantity }, organizer: userId, ticketType: { ticketID: `TICKET-${eventData.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}`, title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity } });
+  const event = await eventModel.create({ ...eventData, organizer: userId, ticketType: { ticketID: `TICKET-${eventData.title.toLocaleUpperCase().replace(" ", "-")}-${Date.now()}`, title: `${eventData.title}-ticket`, price: eventData.ticketType.price, quantity: eventData.ticketType.quantity } });
   if (!event) throw new AppError("Event not created", 500);
+
+  const analytics = await analyticsModel.create({ eventID: event._id, organizerID: userId, ticketsAvailable: eventData.ticketType.quantity });
+  if (!analytics) throw new AppError("Analytics is not created", 500);
+
+  event.analytics = analytics._id;
+  await event.save();
 
   const organizer = await organizerModel.create({ userID: userId, eventID: event._id });
   if (!organizer) throw new AppError("Organizer is not created", 500);
@@ -117,7 +124,9 @@ export const updateEvent = async (eventId, updateData) => {
   if (restUpdateData.ticketType) {
     event.ticketType = { ...event.ticketType.toObject(), ...restUpdateData.ticketType };
     if (restUpdateData.ticketType.quantity) {
-      event.analytics = { ...event.analytics.toObject(), ticketsAvailable: restUpdateData.ticketType.quantity - event.analytics.ticketsSold };
+      const analytics = await analyticsModel.findOne({ eventID: eventId });
+      analytics.ticketsAvailable = restUpdateData.ticketType.quantity;
+      await analytics.save();
     }
     delete restUpdateData.ticketType;
     await event.save();
@@ -170,35 +179,3 @@ export const deleteEvent = async (eventId) => {
   await organizerModel.findOneAndDelete({ eventID: eventId });
   return event;
 };
-
-// export const getRevEvents = async (userID) => {
-//   const user = await userModel.findById(userID);
-//   if(!user) throw new AppError("User not found", 404);
-
-//   let totalRevenue;
-
-//   if(user.role == "admin") {
-//     const events = await eventModel.find();
-//     totalRevenue = events.reduce((total, event) => total + event.analytics.totalRevenue, 0);
-//     return totalRevenue;
-//   }
-
-//   const events = await eventModel.find({ organizer: user._id });
-//   totalRevenue = events.reduce((total, event) => total + event.analytics.totalRevenue, 0);
-//   return totalRevenue;
-
-// };
-
-// export const getEventRevenue = async (userID, eventID) => {
-//   const user = await userModel.findById(userID);
-//   if(!user) throw new AppError("User not found", 404);
-
-//   const event = await eventModel.findById(eventID);
-//   if(!event) throw new AppError("Event not found", 404);
-
-//   if(user.role == "admin" || user._id == event.organizer) {
-//     return event.analytics.totalRevenue;
-//   } else {
-//     throw new AppError("You are not authorized to get this event revenue", 403);
-//   }
-// };
