@@ -27,7 +27,7 @@ export const getEventRevenue = async (userID, eventID) => {
   if (!event) throw new AppError("Event not found", 404);
   if (event.organizer.toString() !== userID && user.role !== "admin") throw new AppError("You are not authorized to access this event", 401);
 
-  const revenue = await AnalyticsModel.find({ eventID });
+  const revenue = await AnalyticsModel.findOne({ eventID });
 
   console.log(">>> totalRevenue", revenue.revenue);
 
@@ -60,7 +60,7 @@ export const getEventNetIncome = async (userID, eventID) => {
 
   let role = user.role == "admin";
 
-  const netIncome = await AnalyticsModel.find({ eventID });
+  const netIncome = await AnalyticsModel.findOne({ eventID });
   const netIncomeValue = role ? netIncome.netIncomeAdmin : netIncome.netIncomeOrganizer;
 
   console.log(">>> totalNetIncome", netIncomeValue);
@@ -90,7 +90,7 @@ export const getEventTicketsSold = async (userID, eventID) => {
   if (!event) throw new AppError("Event not found", 404);
   if (event.organizer.toString() !== userID && user.role !== "admin") throw new AppError("You are not authorized to access this event", 401);
 
-  const ticketsSold = await AnalyticsModel.find({ eventID });
+  const ticketsSold = await AnalyticsModel.findOne({ eventID });
   const ticketsSoldValue = ticketsSold.ticketsSold;
 
   console.log(">>> totalTicketsSold", ticketsSoldValue);
@@ -120,7 +120,7 @@ export const getEventTicketsAvailable = async (userID, eventID) => {
   if (!event) throw new AppError("Event not found", 404);
   if (event.organizer.toString() !== userID && user.role !== "admin") throw new AppError("You are not authorized to access this event", 401);
 
-  const ticketsAvailable = await AnalyticsModel.find({ eventID });
+  const ticketsAvailable = await AnalyticsModel.findOne({ eventID });
   const ticketsAvailableValue = ticketsAvailable.ticketsAvailable;
 
   console.log(">>> totalTicketsAvailable", ticketsAvailableValue);

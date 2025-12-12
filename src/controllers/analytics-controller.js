@@ -3,7 +3,7 @@ import AppError from "../utils/AppError.js";
 import * as analyticsService from "../services/analytics-service.js";
 
 // @desc   Get total revenue
-// @route  GET /api/v1/events/revenue
+// !@route  GET /api/v1/events/analytics/revenue
 // @access Protected
 export const getRevenue = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -12,7 +12,7 @@ export const getRevenue = expressAsyncHandler(async (req, res, next) => {
 });
 
 // @desc   Get revenue of specific event
-// @route  GET /api/v1/events/:id/revenue
+// !@route  GET /api/v1/events/analytics/:id/revenue
 // @access Protected
 export const getEventRevenue = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -22,7 +22,7 @@ export const getEventRevenue = expressAsyncHandler(async (req, res, next) => {
 });
 
 // @desc   Get total net income
-// @route  GET /api/v1/events/net-income
+// !@route  GET /api/v1/events/analytics/net-income
 // @access Protected
 export const getNetIncome = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -31,7 +31,7 @@ export const getNetIncome = expressAsyncHandler(async (req, res, next) => {
 });
 
 // @desc   Get net income of specific event
-// @route  GET /api/v1/events/:id/net-income
+// !@route  GET /api/v1/events/analytics/:id/net-income
 // @access Protected
 export const getEventNetIncome = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -41,7 +41,7 @@ export const getEventNetIncome = expressAsyncHandler(async (req, res, next) => {
 });
 
 // @desc   Get tickets sold of specific event
-// @route  GET /api/v1/events/:id/tickets-sold
+// !@route  GET /api/v1/events/analytics/:id/tickets-sold
 // @access Protected
 export const getEventTicketsSold = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -51,7 +51,7 @@ export const getEventTicketsSold = expressAsyncHandler(async (req, res, next) =>
 });
 
 // @desc   Get tickets available of specific event
-// @route  GET /api/v1/events/:id/tickets-available
+// !@route  GET /api/v1/events/analytics/:id/tickets-available
 // @access Protected
 export const getEventTicketsAvailable = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -62,7 +62,7 @@ export const getEventTicketsAvailable = expressAsyncHandler(async (req, res, nex
 
 
 // @desc   Get total tickets sold
-// @route  GET /api/v1/events/tickets-sold
+// !@route  GET /api/v1/events/analytics/tickets-sold
 // @access Protected
 export const getTicketsSold = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
@@ -72,7 +72,7 @@ export const getTicketsSold = expressAsyncHandler(async (req, res, next) => {
 
 
 // @desc   Get total tickets available
-// @route  GET /api/v1/events/tickets-available
+// !@route  GET /api/v1/events/analytics/tickets-available
 // @access Protected
 export const getTicketsAvailable = expressAsyncHandler(async (req, res, next) => {
   const userID = req.user.id;
