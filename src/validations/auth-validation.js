@@ -197,9 +197,8 @@ const updateMeSchema = Joi.object({
     "string.max": "Password must be at most 15 characters long",
     "string.empty": "Password cannot be empty",
   }),
-  avatar: Joi.string().optional().trim().messages({
+  avatar: Joi.string().optional().allow("").trim().messages({
     "string.base": "Avatar must be a string",
-    "string.empty": "Avatar cannot be empty",
   }),
 });
 
