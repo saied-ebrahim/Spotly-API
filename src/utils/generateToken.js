@@ -17,7 +17,7 @@ export default function generateToken(user) {
  */
 export function generateTicketToken({ ticketId, eventId, userId }) {
   const ticketSecret = process.env.TICKET_JWT_SECRET ;
-  const ticketExpires = process.env.TICKET_JWT_EXPIRES ; // Default 1 year expiration
+  const ticketExpires = "1y" ; // Default 1 year expiration
   
   return jwt.sign(
     {

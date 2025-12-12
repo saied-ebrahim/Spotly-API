@@ -71,29 +71,25 @@ export const deleteEvent = expressAsyncHandler(async (req, res, next) => {
   res.status(204).json({ status: "success", data: null });
 });
 
-
 /**
  * @desc   Get revenue of all events
  * @route  GET /api/v1/events/revenue
  * @access Protected
  */
-export const getRevenue = expressAsyncHandler(async (req, res, next) => {
-  const user = req.user
-  const revenues = await eventService.getRevenue(user.id);
-  res.status(200).json({ status: "success", "Total Revenue": revenues });
-});
-
+// export const getRevenue = expressAsyncHandler(async (req, res, next) => {
+//   const user = req.user
+//   const revenues = await eventService.getRevenue(user.id);
+//   res.status(200).json({ status: "success", "Total Revenue": revenues });
+// });
 
 /**
  * @desc   Get revenue of specific event
  * @route  GET /api/v1/events/:id/revenue
  * @access Protected
  */
-export const getEventRevenue = expressAsyncHandler(async (req, res, next) => {
-  const userID = req.user.id;
-  const eventID = req.params.id;
-  const revenue = await eventService.getEventRevenue(userID, eventID);
-  res.status(200).json({ status: "success", "Event Revenue": revenue });
-});
-
-
+// export const getEventRevenue = expressAsyncHandler(async (req, res, next) => {
+//   const userID = req.user.id;
+//   const eventID = req.params.id;
+//   const revenue = await eventService.getEventRevenue(userID, eventID);
+//   res.status(200).json({ status: "success", "Event Revenue": revenue });
+// });
