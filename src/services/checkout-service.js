@@ -111,6 +111,8 @@ export const webhookService = async (req, res) => {
 
   if (eventType === "checkout.session.completed") {
     await processCheckoutSession(data, req);
+  } else if (eventType === "checkout.session.expired" || eventType === "checkout.session.async_payment_failed") {
+    await cancelOrderService(data.metadata.orderId);
   }
 
   res.status(200).send().end();
