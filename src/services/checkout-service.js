@@ -81,7 +81,7 @@ export const checkoutService = async (userID, eventID, quantity, discount = 0) =
     expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
 
     success_url: process.env.FRONTEND_URL + "/receipt?invoice_id=" + order._id,
-    cancel_url: "http://localhost:5000/api/v1/checkout/cancel/" + order._id,
+    cancel_url: process.env.BACKEND_URL + "/api/v1/checkout/cancel/" + order._id,
     // cancel_url: process.env.BACKEND_URL + "/checkout/cancel",
     // cancel_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
   });
