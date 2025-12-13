@@ -7,7 +7,7 @@ import { checkoutService, webhookService, cancelOrderService } from "../services
  * @route POST /api/v1/checkout
  * @access Private (requires authentication)
  */
-const checkoutController = expressAsyncHandler(async (req, res, next) => {
+export const checkoutController = expressAsyncHandler(async (req, res, next) => {
   const { eventID, quantity, discount } = req.body;
 
   // Validation
@@ -32,7 +32,7 @@ const checkoutController = expressAsyncHandler(async (req, res, next) => {
  * @access Public (called by Stripe)
  * @note webhookService handles the response, so we don't send another response here
  */
-const webhookController = expressAsyncHandler(async (req, res) => {
+export const webhookController = expressAsyncHandler(async (req, res) => {
   await webhookService(req, res);
   // webhookService already sends the response, so we don't need to send again
 });
@@ -42,7 +42,7 @@ const webhookController = expressAsyncHandler(async (req, res) => {
  * @route GET /api/v1/checkout/complete
  * @access Public
  */
-const completeOrderController = expressAsyncHandler(async (req, res) => {
+export const completeOrderController = expressAsyncHandler(async (req, res) => {
   const frontendUrl = process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app";
   res.redirect(`${frontendUrl}/receipt/${order_id}`);
 });
@@ -53,7 +53,7 @@ const completeOrderController = expressAsyncHandler(async (req, res) => {
  * @access Public
  * @query order_id - Order ID
  */
-const cancelOrderController = expressAsyncHandler(async (req, res, next) => {
+export const cancelOrderController = expressAsyncHandler(async (req, res, next) => {
   const { order_id } = req.query;
   if (!order_id) {
     return next(new AppError("Order ID is required", 400));
@@ -64,4 +64,3 @@ const cancelOrderController = expressAsyncHandler(async (req, res, next) => {
   res.redirect(`${frontendUrl}/`);
 });
 
-export { checkoutController, completeOrderController, cancelOrderController, webhookController };

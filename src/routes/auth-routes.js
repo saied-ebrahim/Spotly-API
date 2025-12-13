@@ -1,4 +1,4 @@
-import express from "express";
+import {Router} from "express";
 
 import { signUpController, loginController, refreshTokenController, logoutController, logoutAllController, getMeController, getAllUsersController, updateMeController } from "../controllers/auth-controller.js";
 import { loginSchema, signUpSchema, refreshTokenSchema, logoutSchema, updateMeSchema } from "../validations/auth-validation.js";
@@ -6,7 +6,7 @@ import validateMiddleware from "../middlewares/validation-middleware.js";
 import { authorizeAdmin } from "../middlewares/authorize-admin-middleware.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 
-const router = express.Router();
+const router = Router();
 
 router.post("/signup", validateMiddleware(signUpSchema), signUpController);
 router.post("/login", validateMiddleware(loginSchema), loginController);
@@ -16,6 +16,5 @@ router.post("/logoutAll", logoutAllController);
 router.get("/me", authMiddleware, getMeController);
 router.get("/users", authMiddleware, authorizeAdmin, getAllUsersController);
 router.post("/updateMe", authMiddleware, validateMiddleware(updateMeSchema), updateMeController);
-// router.get("/profile/:id", authMiddleware, getUserProfileController);
 
 export default router;

@@ -1,8 +1,8 @@
-import express from "express";
+import {Router} from "express";
 import eventsRoutes from "../routes/events-routes.js";
 import { getAllOrganizers, getOrganizersByUserId, getOrganizersByEventId } from "../controllers/organizer-controller.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", getAllOrganizers);
 router.use("/events", eventsRoutes);

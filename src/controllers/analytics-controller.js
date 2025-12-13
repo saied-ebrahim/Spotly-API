@@ -44,9 +44,8 @@ export const getEventNetIncome = expressAsyncHandler(async (req, res, next) => {
 // @route  GET /api/v1/events/analytics/:id/tickets-sold
 // @access Protected
 export const getEventTicketsSold = expressAsyncHandler(async (req, res, next) => {
-  const userID = req.user.id;
   const eventID = req.params.id;
-  const ticketsSold = await analyticsService.getEventTicketsSold(userID, eventID);
+  const ticketsSold = await analyticsService.getEventTicketsSold(eventID);
   res.status(200).json({ ticketsSold });
 });
 
@@ -63,8 +62,7 @@ export const getEventTicketsAvailable = expressAsyncHandler(async (req, res, nex
 // @route  GET /api/v1/events/analytics/tickets-sold
 // @access Protected
 export const getTicketsSold = expressAsyncHandler(async (req, res, next) => {
-  const userID = req.user.id;
-  const ticketsSold = await analyticsService.getTicketsSold(userID);
+  const ticketsSold = await analyticsService.getTicketsSold();
   res.status(200).json({ ticketsSold });
 });
 

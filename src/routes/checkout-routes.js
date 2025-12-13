@@ -1,7 +1,8 @@
-import express from "express";
+import {Router} from "express";
 import { checkoutController, completeOrderController, cancelOrderController, webhookController } from "../controllers/checkout-controller.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
-const router = express.Router();
+
+const router = Router();
 
 router.post("/", authMiddleware, checkoutController);
 router.post("/webhook", webhookController);
