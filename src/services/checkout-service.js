@@ -139,6 +139,11 @@ const processCheckoutSession = async (stripeSession, req) => {
 
       const quantity = +stripeSession.metadata.quantity;
 
+      if (!stripeSession.payment_intent) {
+        throw new AppError("Checkout session missing payment_intent", 400);
+      }
+
+
       // ? Retrieve payment method details from Stripe Payment Intent
       let paymentMethodData = {
         method: "card",
