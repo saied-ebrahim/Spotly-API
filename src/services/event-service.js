@@ -88,7 +88,7 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
     .find(query)
     .populate("category", "name")
     .populate("tags", "name")
-    .populate("organizer", "firstName lastName").populate("analytics", "ticketsAvailable ticketsSold likes")
+    .populate("organizer", "firstName lastName avatar").populate("analytics", "ticketsAvailable ticketsSold likes")
     .sort({ [sort]: sortOrder })
     .skip(skip)
     .limit(limit);
