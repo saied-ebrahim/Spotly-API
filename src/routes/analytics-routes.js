@@ -8,9 +8,9 @@ router.get("/revenue", authMiddleware, getRevenue);
 router.get("/:id/revenue", authMiddleware, getEventRevenue);
 router.get("/net-income", authMiddleware, getNetIncome);
 router.get("/:id/net-income", authMiddleware, getEventNetIncome);
-router.get("/tickets-sold", getTicketsSold);
-router.get("/:id/tickets-sold", getEventTicketsSold);
-router.get("/tickets-available", getTicketsAvailable);
-router.get("/:id/tickets-available", getEventTicketsAvailable);
+router.get("/tickets-sold", authMiddleware, getTicketsSold);
+router.get("/:id/tickets-sold", authMiddleware, getEventTicketsSold);
+router.get("/tickets-available", authMiddleware, getTicketsAvailable);
+router.get("/:id/tickets-available", authMiddleware, getEventTicketsAvailable);
 
 export default router;
