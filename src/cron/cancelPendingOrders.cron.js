@@ -3,17 +3,12 @@ import orderModel from "../models/order-model.js";
 
 cron.schedule("*/1 * * * *", async () => {
   try {
-    console.log("Running cancel pending orders job...");
-
-    await orderModel.updateMany(
-      {
-        paymentStatus: "pending",
-        createdAt: { $lt: new Date(Date.now() - 1 * 60 * 1000) },
-      },
-      { paymentStatus: "canceled" }
-    );
+    await orderModel.updateMany({
+      paymentStatus: "cancelled",
+      createdAt: { $lt: new Date(Date.now() - 1 * 60 * 1000) },
+    }, { paymentStatus: "canceled" });
   } catch (err) {
-    console.error("Cron job error:", err);
+    console.error("Cron job error:", err.message);
   }
 });
 
