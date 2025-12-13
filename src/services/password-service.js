@@ -39,3 +39,14 @@ export const resetPasswordService = async (userID, token, password) => {
   user.password = password;
   await user.save();
 };
+
+export const changePasswordService = async (userID, oldPassword, newPassword) => {
+  const user = await userModel.findById(userID);
+  if (!user) throw new AppError("User does not exist", 404);
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) throw new AppError("Old password is incorrect", 400);
+
+  user.password = newPassword;
+  await user.save();
+}
