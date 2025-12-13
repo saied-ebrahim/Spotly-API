@@ -5,6 +5,7 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
+import "./cron/cancelPendingOrders.cron.js";
 
 // ? Middlewares
 import errorHandler from "./middlewares/errors-middleware.js";
