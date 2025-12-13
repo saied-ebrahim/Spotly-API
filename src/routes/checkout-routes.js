@@ -7,6 +7,6 @@ const router = Router();
 router.post("/", authMiddleware, checkoutController);
 router.post("/webhook", webhookController);
 router.get("/complete", completeOrderController);
-router.get("/cancel", cancelOrderController);
+router.get("/cancel/:order_id", cancelOrderController);
 
 export default router;

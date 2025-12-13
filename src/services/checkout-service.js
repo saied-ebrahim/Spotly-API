@@ -50,6 +50,8 @@ export const checkoutService = async (userID, eventID, quantity, discount = 0) =
   const order = await orderModel.create({ userID, eventID, ticketTypeID: event.ticketType.ticketID, quantity, discount, totalAfterDiscount, paymentStatus: "pending" });
   if (!order) throw new AppError("Failed to fulfill order", 500);
 
+  
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
@@ -79,7 +81,9 @@ export const checkoutService = async (userID, eventID, quantity, discount = 0) =
     expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
 
     success_url: process.env.FRONTEND_URL + "/receipt?invoice_id=" + order._id,
-    cancel_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
+    cancel_url: "http://localhost:5000/api/v1/checkout/cancel/" + order._id,
+    // cancel_url: process.env.BACKEND_URL + "/checkout/cancel",
+    // cancel_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
   });
 
   return session.url;
@@ -278,6 +282,10 @@ const processCheckoutSession = async (stripeSession, req) => {
     } catch (error) {
       await session_db.abortTransaction();
       
+      const order=await orderModel.findById({_id: stripeSession.metadata.orderId})
+      order.paymentStatus="canceled";
+      await order.save({session: session_db})
+
       if (error.code === 112 && retries < MAX_RETRIES) { // 112 is WriteConflict
         retries++;
         console.warn(`WriteConflict detected. Retrying transaction attempt ${retries}/${MAX_RETRIES}...`);
@@ -323,24 +331,11 @@ const sendOrderConfirmationEmail = async (userEmail, checkout, tickets, event) =
 };
 
 // ! Cancel Order Service
-export const cancelOrderService = async (sessionID) => {
-  if (!sessionID) throw new AppError("Session ID is required", 400);
+export const cancelOrderService = async (orderID) => {
+  if (!orderID) throw new AppError("Order ID is required", 400);
 
-  const session = await stripe.checkout.sessions.retrieve(sessionID);
-  if (!session) throw new AppError("Session not found", 404);
-
-  const order = await orderModel.findOne({ _id: session.metadata.orderId });
+  const order = await orderModel.findOne({ _id: orderID });
   if (!order) throw new AppError("Order not found", 404);
-
-  //! Check if order is already cancelled or paid
-  if (order.paymentStatus === "cancelled") {
-    console.log(`Order ${order._id} is already cancelled`);
-    return; //! Order already cancelled, no need to update again
-  }
-
-  if (order.paymentStatus === "paid") {
-    throw new AppError("Cannot cancel an order that is already paid", 400);
-  }
 
   order.paymentStatus = "cancelled";
   await order.save();
