@@ -2,7 +2,6 @@ import Organizer from "../models/organizer-model.js";
 import AppError from "../utils/AppError.js";
 
 export const getAllOrganizers = async () => {
-  // const organizers = await Organizer.find().populate("userID", "-password -refreshTokens");
   const organizers = await Organizer.find();
   return organizers;
 };

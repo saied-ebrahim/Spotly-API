@@ -17,7 +17,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 // ! Checkout Service
-const checkoutService = async (userID, eventID, quantity, discount = 0) => {
+export const checkoutService = async (userID, eventID, quantity, discount = 0) => {
   // Validation
   if (!userID) throw new AppError("User ID is required", 400);
   if (!eventID) throw new AppError("Event ID is required", 400);
@@ -86,7 +86,7 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
 };
 
 // ! Webhook Service
-const webhookService = async (req, res) => {
+export const webhookService = async (req, res) => {
   let event = req.body;
 
   // ? Verify Webhook
@@ -325,7 +325,7 @@ const sendOrderConfirmationEmail = async (userEmail, checkout, tickets, event) =
 };
 
 // ! Cancel Order Service
-const cancelOrderService = async (sessionID) => {
+export const cancelOrderService = async (sessionID) => {
   if (!sessionID) throw new AppError("Session ID is required", 400);
 
   const session = await stripe.checkout.sessions.retrieve(sessionID);
@@ -349,4 +349,3 @@ const cancelOrderService = async (sessionID) => {
   console.log(`Order ${order._id} has been cancelled`);
 };
 
-export { checkoutService, webhookService, cancelOrderService };
