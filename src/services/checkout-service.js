@@ -50,8 +50,6 @@ export const checkoutService = async (userID, eventID, quantity, discount = 0) =
   const order = await orderModel.create({ userID, eventID, ticketTypeID: event.ticketType.ticketID, quantity, discount, totalAfterDiscount, paymentStatus: "pending" });
   if (!order) throw new AppError("Failed to fulfill order", 500);
 
-  
-
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
@@ -82,8 +80,6 @@ export const checkoutService = async (userID, eventID, quantity, discount = 0) =
 
     success_url: process.env.FRONTEND_URL + "/receipt?invoice_id=" + order._id,
     cancel_url: process.env.BACKEND_URL + "/api/v1/checkout/cancel/" + order._id,
-    // cancel_url: process.env.BACKEND_URL + "/checkout/cancel",
-    // cancel_url: process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app",
   });
 
   return session.url;
@@ -288,7 +284,7 @@ const processCheckoutSession = async (stripeSession, req) => {
       order.paymentStatus="canceled";
       await order.save({session: session_db})
 
-      if (error.code === 112 && retries < MAX_RETRIES) { // 112 is WriteConflict
+      if (error.code === 112 && retries < MAX_RETRIES) { 
         retries++;
         console.warn(`WriteConflict detected. Retrying transaction attempt ${retries}/${MAX_RETRIES}...`);
         await new Promise(resolve => setTimeout(resolve, 100 * retries)); 
