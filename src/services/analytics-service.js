@@ -89,9 +89,20 @@ export const getEventTicketsAvailable = async (eventID) => {
 };
 
 export const getAllRevenue = async () => {
-  const revenues = await AnalyticsModel.find();
-  let revs = {}
-  revenues.forEach(event => {revs[event.eventID] = event.revenue;})
+  const revs = {};
+  const result = await AnalyticsModel.aggregate([
+    {
+        $lookup: {
+            from: "events",
+            localField: "eventID",
+            foreignField: "_id",
+            as: "event"
+        }
+    },
+    { $unwind: "$event" },
+    { $project: { "revenue": 1, "event.title": 1 } }
+  ])
+  result.forEach(event => {revs[event.event.title] = event.revenue})
   return revs;
 };
 
