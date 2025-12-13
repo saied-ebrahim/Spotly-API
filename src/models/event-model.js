@@ -48,16 +48,7 @@ const EventSchema = new mongoose.Schema(
       longitude: { type: Number },
     },
     media: { mediaType: { type: String, enum: ["image", "video"], required: [true, "Event media type is required"] }, mediaUrl: { type: String, required: [true, "Event media URL is required"] } },
-    analytics: {
-      ticketsSold: { type: Number, default: 0 },
-      ticketsAvailable: { type: Number, default: 0 },
-      totalRevenue: { type: Number, default: 0 },
-      waitingListCount: { type: Number, default: 0 },
-      netIncomeAdmin: { type: Number, default: 0 },
-      netIncomeOrganizer: { type: Number, default: 0 },
-      likes: { type: Number, default: 0 },
-      dislikes: { type: Number, default: 0 },
-    },
+    analytics: { type: mongoose.Schema.Types.ObjectId, ref: "Analytics" },
     ticketType: {
       ticketID: { type: String },
       title: { type: String },
@@ -75,34 +66,6 @@ const EventSchema = new mongoose.Schema(
 EventSchema.pre("save", function (next) {
   if (this.type === "offline") this.location.country = "Egypt";
   next();
-});
-
-EventSchema.path("analytics.ticketsAvailable").validate({
-  validator: function (value) {
-    return value >= 0;
-  },
-  message: "Event tickets available must be a non-negative number",
-});
-
-EventSchema.path("analytics.ticketsSold").validate({
-  validator: function (value) {
-    return value >= 0;
-  },
-  message: "Event tickets sold must be a non-negative number",
-});
-
-EventSchema.path("analytics.likes").validate({
-  validator: function (value) {
-    return value >= 0;
-  },
-  message: "Event likes must be a non-negative number",
-});
-
-EventSchema.path("analytics.dislikes").validate({
-  validator: function (value) {
-    return value >= 0;
-  },
-  message: "Event dislikes must be a non-negative number",
 });
 
 EventSchema.path("ticketType.price").validate({
