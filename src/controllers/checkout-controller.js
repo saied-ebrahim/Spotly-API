@@ -57,6 +57,7 @@ export const cancelOrderController = expressAsyncHandler(async (req, res, next) 
   const orderID = req.params.order_id;
   if (!orderID) return next(new AppError("Order ID is required", 400));
   await cancelOrderService(orderID);
-  res.status(200).json({ message: "Order canceled successfully" });
+  // res.status(200).json({ message: "Order canceled successfully" });
+  res.redirect(`${process.env.FRONTEND_URL}/receipt/${orderID}`);
 });
 
