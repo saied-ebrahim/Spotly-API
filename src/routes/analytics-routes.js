@@ -1,6 +1,7 @@
 import Router from "express";
 import authMiddleware from "../middlewares/auth-middleware.js";
-import { getEventNetIncome, getEventRevenue, getNetIncome, getRevenue, getTicketsSold, getTicketsAvailable, getEventTicketsSold, getEventTicketsAvailable } from "../controllers/analytics-controller.js";
+import { authorizeAdmin } from "../middlewares/authorize-admin-middleware.js";
+import { getEventNetIncome, getEventRevenue, getNetIncome, getRevenue, getTicketsSold, getTicketsAvailable, getEventTicketsSold, getEventTicketsAvailable, getAllRevenue } from "../controllers/analytics-controller.js";
 
 const router = Router({ mergeParams: true });
 
@@ -12,5 +13,6 @@ router.get("/tickets-sold", authMiddleware, getTicketsSold);
 router.get("/:id/tickets-sold", authMiddleware, getEventTicketsSold);
 router.get("/tickets-available", authMiddleware, getTicketsAvailable);
 router.get("/:id/tickets-available", authMiddleware, getEventTicketsAvailable);
+router.get("/all-revenue", authMiddleware, authorizeAdmin, getAllRevenue);
 
 export default router;

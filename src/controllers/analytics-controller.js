@@ -1,5 +1,4 @@
 import expressAsyncHandler from "express-async-handler";
-import AppError from "../utils/AppError.js";
 import * as analyticsService from "../services/analytics-service.js";
 
 // @desc   Get total revenue
@@ -72,4 +71,12 @@ export const getTicketsSold = expressAsyncHandler(async (req, res, next) => {
 export const getTicketsAvailable = expressAsyncHandler(async (req, res, next) => {
   const ticketsAvailable = await analyticsService.getTicketsAvailable();
   res.status(200).json({ ticketsAvailable });
+});
+
+// @desc   Get All revenues for events
+// @route  GET /api/v1/events/analytics/all-revenue
+// @access Protected
+export const getAllRevenue = expressAsyncHandler(async (req, res, next) => {
+  const revenues = await analyticsService.getAllRevenue();
+  res.status(200).json(revenues);
 });

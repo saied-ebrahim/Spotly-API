@@ -88,3 +88,10 @@ export const getEventTicketsAvailable = async (eventID) => {
   return ticketsAvailableValue;
 };
 
+export const getAllRevenue = async () => {
+  const revenues = await AnalyticsModel.find();
+  let revs = {}
+  revenues.forEach(event => {revs[event.eventID] = event.revenue;})
+  return revs;
+};
+
