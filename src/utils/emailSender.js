@@ -40,7 +40,7 @@ async function sendEmail(to, subject, html) {
   await verifyTransporter();
   try {
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      from: process.env.EMAIL_FROM ,
       to: to,
       subject: subject,
       html: html,

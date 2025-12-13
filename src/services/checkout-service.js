@@ -279,7 +279,7 @@ const processCheckoutSession = async (stripeSession, req) => {
 // ! Send Order Confirmation Email
 const sendOrderConfirmationEmail = async (userEmail, checkout, tickets, event) => {
   try {
-    const ticketsList = tickets.map((ticket, index) => `<li>Ticket ${index + 1}: ${ticket._id}</li>`).join("");
+    const ticketsList = tickets.map((ticket, index) => `<li>Ticket ${index + 1}</li>`).join("");
 
     const emailHTML = `
       <h2>Order Confirmation</h2>
@@ -294,6 +294,9 @@ const sendOrderConfirmationEmail = async (userEmail, checkout, tickets, event) =
       <h3>Your Tickets:</h3>
       <ul>${ticketsList}</ul>
       <p>You can view and download your tickets from your account.</p>
+      <p>Thank you for choosing Spotly!</p>
+      <p>If you have any questions, please contact us at <a href="mailto:support@spotly.com">support@spotly.com</a></p>
+      
     `;
 
     await sendEmail(userEmail, `Order Confirmation - ${event.title}`, emailHTML);
