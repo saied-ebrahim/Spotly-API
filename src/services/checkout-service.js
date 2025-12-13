@@ -17,7 +17,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 // ! Checkout Service
-const checkoutService = async (userID, eventID, quantity, discount = 0) => {
+export const checkoutService = async (userID, eventID, quantity, discount = 0) => {
   // Validation
   if (!userID) throw new AppError("User ID is required", 400);
   if (!eventID) throw new AppError("Event ID is required", 400);
@@ -86,7 +86,7 @@ const checkoutService = async (userID, eventID, quantity, discount = 0) => {
 };
 
 // ! Webhook Service
-const webhookService = async (req, res) => {
+export const webhookService = async (req, res) => {
   let event = req.body;
 
   // ? Verify Webhook
@@ -138,6 +138,11 @@ const processCheckoutSession = async (stripeSession, req) => {
       }
 
       const quantity = +stripeSession.metadata.quantity;
+
+      if (!stripeSession.payment_intent) {
+        throw new AppError("Checkout session missing payment_intent", 400);
+      }
+
 
       // ? Retrieve payment method details from Stripe Payment Intent
       let paymentMethodData = {
@@ -260,6 +265,8 @@ const processCheckoutSession = async (stripeSession, req) => {
       eventAnalytics.ticketsSold = (eventAnalytics.ticketsSold || 0) + quantity;
       eventAnalytics.ticketsAvailable = (eventAnalytics.ticketsAvailable || 0) - quantity;
       eventAnalytics.revenue = (eventAnalytics.revenue || 0) + (stripeSession.amount_total / 100);
+      eventAnalytics.netIncomeAdmin += (event.ticketType.price * quantity) * (15 / 100);
+      eventAnalytics.netIncomeOrganizer += (event.ticketType.price * quantity) - (event.ticketType.price * quantity) * (15 / 100);
       await eventAnalytics.save({ session: session_db });
 
       // ? Commit transaction
@@ -321,7 +328,7 @@ const sendOrderConfirmationEmail = async (userEmail, checkout, tickets, event) =
 };
 
 // ! Cancel Order Service
-const cancelOrderService = async (sessionID) => {
+export const cancelOrderService = async (sessionID) => {
   if (!sessionID) throw new AppError("Session ID is required", 400);
 
   const session = await stripe.checkout.sessions.retrieve(sessionID);
@@ -345,4 +352,3 @@ const cancelOrderService = async (sessionID) => {
   console.log(`Order ${order._id} has been cancelled`);
 };
 
-export { checkoutService, webhookService, cancelOrderService };

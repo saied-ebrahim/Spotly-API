@@ -1,7 +1,5 @@
-// validations/category-validation.js
 import Joi from "joi";
 
-// Validation for creating a category
 export const createCategoryValidation = Joi.object({
   name: Joi.string()
     .required()

@@ -8,7 +8,7 @@ import getSignedFileUrl from "./getSignedFileUrl.js";
  * @param {string} ticketId - Ticket ID for unique file naming
  * @returns {Promise<string>} - R2 file key
  */
-const uploadQRToR2 = async (qrBuffer, ticketId) => {
+export const uploadQRToR2 = async (qrBuffer, ticketId) => {
   try {
     const key = `qr-codes/ticket-${ticketId}-${Date.now()}.png`;
     
@@ -36,7 +36,7 @@ const uploadQRToR2 = async (qrBuffer, ticketId) => {
  * @returns {Promise<string>} - Signed URL for the QR code
  * @note AWS S3/R2 presigned URLs have a maximum expiration of 7 days (604800 seconds)
  */
-const uploadQRToR2WithSignedUrl = async (qrBuffer, ticketId, expiresIn = 604800) => {
+export const uploadQRToR2WithSignedUrl = async (qrBuffer, ticketId, expiresIn = 604800) => {
   // Ensure expiration doesn't exceed AWS S3/R2 limit (7 days)
   const maxExpiration = 604800; // 7 days in seconds
   const validExpiration = Math.min(expiresIn, maxExpiration);
@@ -45,6 +45,4 @@ const uploadQRToR2WithSignedUrl = async (qrBuffer, ticketId, expiresIn = 604800)
   const signedUrl = await getSignedFileUrl(key, validExpiration);
   return signedUrl;
 };
-
-export { uploadQRToR2, uploadQRToR2WithSignedUrl };
 

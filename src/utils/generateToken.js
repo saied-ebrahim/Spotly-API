@@ -7,26 +7,9 @@ export default function generateToken(user) {
   };
 }
 
-/**
- * Generate JWT token for ticket verification
- * @param {Object} ticketData - Ticket data to encode
- * @param {string} ticketData.ticketId - Ticket ID
- * @param {string} ticketData.eventId - Event ID
- * @param {string} ticketData.userId - User ID
- * @returns {string} JWT token
- */
+
 export function generateTicketToken({ ticketId, eventId, userId }) {
   const ticketSecret = process.env.TICKET_JWT_SECRET ;
-  const ticketExpires = "1y" ; // Default 1 year expiration
-  
-  return jwt.sign(
-    {
-      ticketId,
-      eventId,
-      userId,
-      type: "ticket",
-    },
-    ticketSecret,
-    { expiresIn: ticketExpires }
-  );
+  const ticketExpires = "1y" ;
+  return jwt.sign({ ticketId, eventId, userId, type: "ticket" }, ticketSecret, { expiresIn: ticketExpires });
 }
