@@ -54,13 +54,9 @@ export const completeOrderController = expressAsyncHandler(async (req, res) => {
  * @query order_id - Order ID
  */
 export const cancelOrderController = expressAsyncHandler(async (req, res, next) => {
-  const { order_id } = req.query;
-  if (!order_id) {
-    return next(new AppError("Order ID is required", 400));
-  }
-
-  await cancelOrderService(order_id);
-  const frontendUrl = process.env.FRONTEND_URL || "https://spotly-clinet.vercel.app";
-  res.redirect(`${frontendUrl}/`);
+  const orderID = req.params.order_id;
+  if (!orderID) return next(new AppError("Order ID is required", 400));
+  await cancelOrderService(orderID);
+  res.status(200).json({ message: "Order canceled successfully" });
 });
 
