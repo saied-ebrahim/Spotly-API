@@ -112,7 +112,7 @@ export const getAllEvents = async ({ page = 1, limit = 10, search = "", category
 export const getEventById = async (eventId) => {
   const event = await eventModel.findById(eventId).populate("category", "name")
     .populate("tags", "name")
-    .populate("organizer", "firstName lastName").populate("analytics", "ticketsAvailable ticketsSold likes");
+    .populate("organizer", "firstName lastName avatar").populate("analytics", "ticketsAvailable ticketsSold likes");
   if (!event) throw new AppError("Event not found", 404);
   return event;
 };
