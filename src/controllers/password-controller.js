@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import AppError from "../utils/AppError.js";
-import { forgotPasswordService, resetPasswordLinkService, resetPasswordService } from "../services/password-service.js";
+import { forgotPasswordService, resetPasswordLinkService, resetPasswordService, changePasswordService } from "../services/password-service.js";
 
 /**
  * @desc   Forget password
@@ -38,3 +38,14 @@ export const resetPasswordController = expressAsyncHandler(async (req, res) => {
   await resetPasswordService(userID, token, password);
   res.status(200).json({ message: "Password reset successfully" });
 });
+
+// @desc   Change password
+// @route  POST /api/v1/password/change-password
+// @access Private
+export const changePasswordController = expressAsyncHandler(async (req, res) => {
+  const userID = req.user.id;
+  const { oldPassword, newPassword } = req.body;
+  const x = await changePasswordService(userID, oldPassword, newPassword);
+  res.status(200).json({ message: "Password changed successfully" });
+});
+
