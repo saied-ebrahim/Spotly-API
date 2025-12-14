@@ -29,13 +29,14 @@ export const generateQRCodeController = expressAsyncHandler(async (req, res) => 
 /**
  * @desc   Verify ticket by QR Code (JWT token)
  * @route  GET /api/v1/tickets/verify/:ticketToken
- * @access Public
+ * @access Protected (Event organizer or Admin only)
  * @note   ticketToken is a JWT token containing ticketId, eventId, and userId
  */
 export const verifyTicketController = expressAsyncHandler(async (req, res) => {
   const { ticketToken } = req.params;
-
-  const result = await verifyTicketService(ticketToken);
+  const userId = req.user._id.toString();
+  const isAdmin = req.user.role === "admin";
+  const result = await verifyTicketService(ticketToken, userId, isAdmin);
   res.json(result);
 });
 
@@ -70,12 +71,14 @@ export const getTicketsByOrderController = expressAsyncHandler(async (req, res) 
 /**
  * @desc   Get ticket details
  * @route  GET /api/v1/tickets/:ticketId
- * @access Public
+ * @access Protected (Ticket owner, Event organizer, or Admin only)
  */
 export const getTicketDetailsController = expressAsyncHandler(async (req, res) => {
   const { ticketId } = req.params;
+  const userId = req.user?._id?.toString() || null;
+  const isAdmin = req.user?.role === "admin" || false;
 
-  const result = await getTicketDetailsService(ticketId);
+  const result = await getTicketDetailsService(ticketId, userId, isAdmin);
   res.json(result);
 });
 

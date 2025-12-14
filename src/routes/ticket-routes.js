@@ -9,6 +9,6 @@ router.get("/verify/:ticketToken", authMiddleware, verifyTicketController);
 router.get("/checkout/:checkoutId", authMiddleware, getTicketsByCheckoutController);
 router.get("/order/:orderId", authMiddleware, getTicketsByOrderController);
 router.get("/orders", authMiddleware, getAllTicketsController);
-router.get("/:ticketId", getTicketDetailsController);
+router.get("/:ticketId", authMiddleware, getTicketDetailsController);
 
 export default router;
