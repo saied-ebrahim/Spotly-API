@@ -51,7 +51,8 @@ app.use(cookieParser());
 // !----------
 const allowedOrigins = [
   "http://localhost:8000",
-  "https://spotly-clinet.vercel.app"
+  "https://spotly-clinet.vercel.app",
+  "https://spotly-clinet-git-test-saeed-ebrahims-projects.vercel.app"
 ];
 
 app.use(
