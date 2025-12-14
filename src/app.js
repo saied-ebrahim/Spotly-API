@@ -49,24 +49,38 @@ app.use(cookieParser());
 //   credentials: true
 // }));
 // !----------
-// Allowed origins
 const allowedOrigins = [
-  "http://localhost:8000",               // Next.js dev
-  "https://spotly-clinet.vercel.app",   // production frontend
+  "http://localhost:8000",
+  "https://spotly-clinet.vercel.app"
 ];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: function (origin, callback) {
+      // allow requests with no origin (Postman or server-to-server)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, origin);
       } else {
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, // needed for cookies
+    credentials: true,
+    optionsSuccessStatus: 200
   })
 );
+
+// Handle OPTIONS preflight dynamically
+app.options("*", cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 // !----------
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
