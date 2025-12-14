@@ -27,27 +27,47 @@ import ticketRoutes from "./routes/ticket-routes.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.js";
 
-// ! App
-const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// ! App
+const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(cors({
-  origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:8000', "https://spotly-clinet.vercel.app"];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
 app.use((req, res, next) => {
   req.originalUrl === "/api/v1/checkout/webhook" ? express.raw({ type: "application/json" })(req, res, next) : express.json()(req, res, next);
 });
 app.use(cookieParser());
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     const allowedOrigins = ['http://localhost:8000', "https://spotly-clinet.vercel.app"];
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, origin);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true
+// }));
+// !----------
+// Allowed origins
+const allowedOrigins = [
+  "http://localhost:8000",               // Next.js dev
+  "https://spotly-clinet.vercel.app",   // production frontend
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, origin);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // needed for cookies
+  })
+);
+// !----------
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
