@@ -4,6 +4,8 @@ import AppError from "../utils/AppError.js";
 import attendeeModel from "../models/attendee-model.js";
 import checkoutModel from "../models/checkout-model.js";
 import orderModel from "../models/order-model.js";
+import eventModel from "../models/event-model.js";
+import organizerModel from "../models/organizer-model.js";
 import { verifyTicketToken } from "../utils/verifyRefreshToken.js";
 import { generateTicketToken } from "../utils/generateToken.js";
 import { uploadQRToR2WithSignedUrl } from "../utils/uploadQRToR2.js";
@@ -18,20 +20,34 @@ export const generateQRCodeService = async (ticketId, user = null) => {
   // التحقق من وجود التذكرة
   const ticket = await attendeeModel
     .findById(ticketId)
-    .populate("eventId", "title date time")
+    .populate("eventId", "title date time organizer")
     .populate("userId", "firstName lastName email");
 
   if (!ticket) {
     throw new AppError("Ticket not found", 404);
   }
 
-  // Authorization: Only ticket owner or admin can generate/retrieve QR code (if user is provided)
+  // Authorization: Only ticket owner, event organizer, or admin can generate/retrieve QR code (if user is provided)
   if (user) {
     const userId = user._id.toString();
     const isAdmin = user.role === "admin";
     const ticketUserId = ticket.userId?._id?.toString() || ticket.userId?.toString();
+    const eventId = ticket.eventId?._id || ticket.eventId;
+    
+    // Check if user is ticket owner
+    const isTicketOwner = ticketUserId === userId;
+    
+    // Check if user is event organizer
+    let isEventOrganizer = false;
+    if (eventId) {
+      const event = await eventModel.findById(eventId);
+      if (event) {
+        const eventOrganizerId = event.organizer?._id?.toString() || event.organizer?.toString();
+        isEventOrganizer = eventOrganizerId === userId;
+      }
+    }
 
-    if (!isAdmin && ticketUserId !== userId) {
+    if (!isAdmin && !isTicketOwner && !isEventOrganizer) {
       throw new AppError("You are not authorized to access this ticket", 403);
     }
   }
@@ -90,9 +106,11 @@ export const generateQRCodeService = async (ticketId, user = null) => {
 /**
  * Verify ticket by QR Code (JWT token)
  * @param {string} ticketToken - JWT token containing ticketId, eventId, and userId
+ * @param {string} userId - User ID of the person verifying (must be event organizer or admin)
+ * @param {boolean} isAdmin - Whether user is admin
  * @returns {Promise<object>} Verification result
  */
-export const verifyTicketService = async (ticketToken) => {
+export const verifyTicketService = async (ticketToken, userId = null, isAdmin = false) => {
   // Verify and decode JWT token
   let decodedToken;
   try {
@@ -101,12 +119,12 @@ export const verifyTicketService = async (ticketToken) => {
     throw new AppError(error.message || "Invalid ticket token", 401);
   }
 
-  const { ticketId, eventId, userId } = decodedToken;
+  const { ticketId, eventId, userId: ticketUserId } = decodedToken;
 
   // Find ticket using ticketId from decoded token
   const ticket = await attendeeModel
     .findById(ticketId)
-    .populate("eventId", "title date time location")
+    .populate("eventId", "title date time location organizer")
     .populate("userId", "firstName lastName email phone")
     .populate("checkoutId", "status totalAmount");
 
@@ -116,10 +134,25 @@ export const verifyTicketService = async (ticketToken) => {
 
   // Verify token data matches ticket data (additional security check)
   const ticketEventId = ticket.eventId?._id || ticket.eventId;
-  const ticketUserId = ticket.userId?._id || ticket.userId;
+  const ticketUserFromTicket = ticket.userId?._id || ticket.userId;
 
-  if (String(ticketEventId) !== eventId || String(ticketUserId) !== userId) {
+  if (String(ticketEventId) !== eventId || String(ticketUserFromTicket) !== ticketUserId) {
     throw new AppError("Ticket token data mismatch", 401);
+  }
+
+  // Authorization: Only event organizer or admin can verify tickets
+  if (userId) {
+    const event = await eventModel.findById(ticketEventId);
+    if (!event) {
+      throw new AppError("Event not found", 404);
+    }
+
+    const eventOrganizerId = event.organizer?._id?.toString() || event.organizer?.toString();
+    const isEventOrganizer = eventOrganizerId === userId;
+    
+    if (!isAdmin && !isEventOrganizer) {
+      throw new AppError("You are not authorized to verify this ticket. Only the event organizer or admin can verify tickets.", 403);
+    }
   }
 
   // التحقق من حالة الدفع
@@ -177,9 +210,23 @@ export const getTicketsByCheckoutService = async (checkoutId, userId, isAdmin) =
     throw new AppError("Checkout not found", 404);
   }
 
-  // Authorization: Only checkout owner or admin can access tickets
+  // Authorization: Only checkout owner, event organizer, or admin can access tickets
   const checkoutUserId = checkout.user?.userID?.toString() || checkout.user?.userID;
-  if (!isAdmin && checkoutUserId !== userId) {
+  const isCheckoutOwner = checkoutUserId === userId;
+  
+  // Get order to find event
+  const order = await orderModel.findById(checkout.orderID);
+  let isEventOrganizer = false;
+  
+  if (order && order.eventID) {
+    const event = await eventModel.findById(order.eventID);
+    if (event) {
+      const eventOrganizerId = event.organizer?._id?.toString() || event.organizer?.toString();
+      isEventOrganizer = eventOrganizerId === userId;
+    }
+  }
+  
+  if (!isAdmin && !isCheckoutOwner && !isEventOrganizer) {
     throw new AppError("You are not authorized to access these tickets", 403);
   }
 
@@ -231,9 +278,21 @@ export const getTicketsByOrderService = async (orderId, userId, isAdmin) => {
     throw new AppError("Order not found", 404);
   }
 
-  // Authorization: Only order owner or admin can access tickets
+  // Authorization: Only order owner, event organizer, or admin can access tickets
   const orderUserId = order.userID?.toString();
-  if (!isAdmin && orderUserId !== userId) {
+  const isOrderOwner = orderUserId === userId;
+  
+  // Check if user is event organizer
+  let isEventOrganizer = false;
+  if (order.eventID) {
+    const event = await eventModel.findById(order.eventID);
+    if (event) {
+      const eventOrganizerId = event.organizer?._id?.toString() || event.organizer?.toString();
+      isEventOrganizer = eventOrganizerId === userId;
+    }
+  }
+  
+  if (!isAdmin && !isOrderOwner && !isEventOrganizer) {
     throw new AppError("You are not authorized to access these tickets", 403);
   }
 
@@ -300,17 +359,40 @@ export const getTicketsByOrderService = async (orderId, userId, isAdmin) => {
 /**
  * Get ticket details
  * @param {string} ticketId - Ticket ID
+ * @param {string} userId - User ID for authorization
+ * @param {boolean} isAdmin - Whether user is admin
  * @returns {Promise<object>} Ticket data
  */
-export const getTicketDetailsService = async (ticketId) => {
+export const getTicketDetailsService = async (ticketId, userId = null, isAdmin = false) => {
   const ticket = await attendeeModel
     .findById(ticketId)
-    .populate("eventId", "title description date time location media")
+    .populate("eventId", "title description date time location media organizer")
     .populate("userId", "firstName lastName email phone")
     .populate("checkoutId", "status totalAmount currency paidAt");
 
   if (!ticket) {
     throw new AppError("Ticket not found", 404);
+  }
+
+  // Authorization: Only ticket owner, event organizer, or admin can access ticket details
+  if (userId) {
+    const ticketUserId = ticket.userId?._id?.toString() || ticket.userId?.toString();
+    const isTicketOwner = ticketUserId === userId;
+    
+    // Check if user is event organizer
+    let isEventOrganizer = false;
+    const eventId = ticket.eventId?._id || ticket.eventId;
+    if (eventId) {
+      const event = await eventModel.findById(eventId);
+      if (event) {
+        const eventOrganizerId = event.organizer?._id?.toString() || event.organizer?.toString();
+        isEventOrganizer = eventOrganizerId === userId;
+      }
+    }
+    
+    if (!isAdmin && !isTicketOwner && !isEventOrganizer) {
+      throw new AppError("You are not authorized to access this ticket", 403);
+    }
   }
 
   return {
