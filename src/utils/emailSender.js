@@ -36,13 +36,13 @@ async function verifyTransporter() {
   }
 }
 
-async function sendEmail(to, subject, html) {
+async function sendEmail(to, tokenject, html) {
   await verifyTransporter();
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM ,
       to: to,
-      subject: subject,
+      tokenject: tokenject,
       html: html,
     });
     return info;

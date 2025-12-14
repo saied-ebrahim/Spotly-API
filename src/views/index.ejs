@@ -205,7 +205,7 @@
                 </div>
 
                 <div class="input-group">
-                    <button type="submit" id="submit-btn">Reset Password</button>
+                    <button type="tokenmit" id="tokenmit-btn">Reset Password</button>
                 </div>
 
                 <div class="status-message" id="status-message"></div>
@@ -217,7 +217,7 @@
             const form = document.getElementById("reset-form");
             const passwordInput = document.getElementById("password");
             const confirmPasswordInput = document.getElementById("confirm-password");
-            const submitBtn = document.getElementById("submit-btn");
+            const tokenmitBtn = document.getElementById("tokenmit-btn");
             const statusMessage = document.getElementById("status-message");
 
             // Validation state
@@ -280,11 +280,11 @@
             passwordInput.addEventListener("input", validatePassword);
             confirmPasswordInput.addEventListener("input", validateMatch);
 
-            // Form Submission
-            form.addEventListener("submit", async (e) => {
+            // Form tokenmission
+            form.addEventListener("tokenmit", async (e) => {
                 e.preventDefault();
 
-                // Final validation before submit
+                // Final validation before tokenmit
                 validatePassword();
                 validateMatch();
 
@@ -295,8 +295,8 @@
                 const newPassword = passwordInput.value;
 
                 // Disable button during api call
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Resetting...";
+                tokenmitBtn.disabled = true;
+                tokenmitBtn.textContent = "Resetting...";
                 statusMessage.className = "status-message"; // clear classes
                 statusMessage.style.display = "none";
 
@@ -347,8 +347,8 @@
                         "Request sent (Check console for payload). API endpoint /api/reset-password not found.";
                     statusMessage.classList.add("error");
                 } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Reset Password";
+                    tokenmitBtn.disabled = false;
+                    tokenmitBtn.textContent = "Reset Password";
                 }
             });
         });
