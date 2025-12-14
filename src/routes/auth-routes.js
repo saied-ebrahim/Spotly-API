@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/signup", validateMiddleware(signUpSchema), signUpController);
 router.post("/login", validateMiddleware(loginSchema), loginController);
-router.post("/refreshToken", validateMiddleware(refreshTokenSchema), refreshTokenController);
+router.post("/refreshToken", authMiddleware, validateMiddleware(refreshTokenSchema), refreshTokenController);
 router.post("/logout", validateMiddleware(logoutSchema), logoutController);
 router.post("/logoutAll", logoutAllController);
 router.get("/me", authMiddleware, getMeController);
