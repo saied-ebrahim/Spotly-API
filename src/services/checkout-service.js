@@ -78,7 +78,7 @@ export const checkoutService = async (userID, eventID, quantity, discount = 0) =
     shipping_address_collection: { allowed_countries: ["EG"] },
     expires_at: Math.floor(Date.now() / 1000) + 60 * 30,
 
-    success_url: process.env.FRONTEND_URL + "/receipt?invoice_id=" + order._id,
+    success_url: process.env.FRONTEND_URL + "/my-orders/receipt?invoice_id=" + order._id,
     cancel_url: process.env.BACKEND_URL + "/api/v1/checkout/cancel/" + order._id,
   });
 

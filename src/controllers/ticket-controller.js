@@ -5,6 +5,7 @@ import {
   getTicketsByCheckoutService,
   getTicketsByOrderService,
   getTicketDetailsService,
+  getAllTicketsService,
 } from "../services/ticket-service.js";
 
 /**
@@ -78,3 +79,13 @@ export const getTicketDetailsController = expressAsyncHandler(async (req, res) =
   res.json(result);
 });
 
+/**
+ * @desc   Get all orders with tickets for the authenticated user
+ * @route  GET /api/v1/tickets/
+ * @access Protected
+ */
+export const getAllTicketsController = expressAsyncHandler(async (req, res) => {
+  const userId = req.user._id.toString();
+  const result = await getAllTicketsService(userId);
+  res.json(result);
+});

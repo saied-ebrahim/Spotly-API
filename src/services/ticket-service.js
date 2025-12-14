@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import mongoose from "mongoose";
 import AppError from "../utils/AppError.js";
 import attendeeModel from "../models/attendee-model.js";
 import checkoutModel from "../models/checkout-model.js";
@@ -329,3 +330,95 @@ export const getTicketDetailsService = async (ticketId) => {
   };
 };
 
+/**
+ * Get all orders with tickets for a specific user
+ * @param {string} userId - User ID
+ * @returns {Promise<object>} Orders with tickets data
+ */
+export const getAllTicketsService = async (userId) => {
+  if (!userId) {
+    throw new AppError("User ID is required", 400);
+  }
+
+  // Convert userId to ObjectId to ensure proper query matching
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  // Get all orders for this user
+  const orders = await orderModel
+    .find({ userID: userObjectId })
+    .populate("eventID", "title description date time location media")
+    .populate("userID", "firstName lastName email phone")
+    .sort({ createdAt: -1 });
+
+  // For each order, get the checkout and tickets
+  const ordersWithTickets = await Promise.all(
+    orders.map(async (order) => {
+      // Find checkout for this order
+      const checkout = await checkoutModel.findOne({ orderID: order._id });
+
+      if (!checkout) {
+        return {
+          order: {
+            id: order._id,
+            event: order.eventID,
+            user: order.userID,
+            quantity: order.quantity,
+            discount: order.discount,
+            totalAfterDiscount: order.totalAfterDiscount,
+            paymentStatus: order.paymentStatus,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
+          },
+          checkout: null,
+          // tickets: [],
+        };
+      }
+
+      // Get all tickets for this checkout
+      // const tickets = await attendeeModel
+      //   .find({ checkoutId: checkout._id })
+      //   .populate("eventId", "title description date time location media")
+      //   .populate("userId", "firstName lastName email phone")
+      //   .populate("checkoutId", "status totalAmount currency paidAt")
+      //   .sort({ createdAt: 1 });
+
+      return {
+        order: {
+          id: order._id,
+          event: order.eventID,
+          user: order.userID,
+          quantity: order.quantity,
+          discount: order.discount,
+          totalAfterDiscount: order.totalAfterDiscount,
+          paymentStatus: order.paymentStatus,
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+        },
+        checkout: {
+          id: checkout._id,
+          totalAmount: checkout.totalAmount,
+          currency: checkout.currency,
+          status: checkout.status,
+          paidAt: checkout.paidAt,
+          paymentMethod: checkout.paymentMethod,
+          createdAt: checkout.createdAt,
+        },
+        // tickets: tickets.map((ticket) => ({
+        //   id: ticket._id,
+        //   event: ticket.eventId,
+        //   user: ticket.userId,
+        //   qrCode: ticket.qrCode,
+        //   isVerified: ticket.isVerified,
+        //   verifiedAt: ticket.verifiedAt,
+        //   createdAt: ticket.createdAt,
+        // })),
+      };
+    })
+  );
+
+  return {
+    success: true,
+    count: ordersWithTickets.length,
+    data: ordersWithTickets,
+  };
+};
