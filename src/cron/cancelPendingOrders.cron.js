@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import orderModel from "../models/order-model.js";
 
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
   try {
     await orderModel.updateMany({
       paymentStatus: "cancelled",
