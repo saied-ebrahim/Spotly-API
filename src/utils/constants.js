@@ -5,7 +5,8 @@ export const MAX_REFRESH_TOKENS_PER_USER = 5;
 // Cookie Options
 export const getCookieOptions = () => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  // secure: process.env.NODE_ENV === "production",
+  secure: true,
+  sameSite: "none",
   maxAge: COOKIE_MAX_AGE,
 });
