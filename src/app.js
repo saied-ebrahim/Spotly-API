@@ -44,6 +44,13 @@ app.use(cors({
   },
   credentials: true
 }));
+// app.use(
+//   cors({
+//     origin: "http://localhost:8000",
+//     credentials: true,
+//   })
+// );
+
 app.use((req, res, next) => {
   req.originalUrl === "/api/v1/checkout/webhook" ? express.raw({ type: "application/json" })(req, res, next) : express.json()(req, res, next);
 });
