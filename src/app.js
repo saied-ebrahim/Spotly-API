@@ -53,6 +53,7 @@ const allowedOrigins = [
   "http://localhost:8000",
   "https://spotly-clinet.vercel.app",
   "https://spotly-clinet-git-test-saeed-ebrahims-projects.vercel.app"
+  ,"https://spotly-clinet-git-landingpg-saeed-ebrahims-projects.vercel.app"
 ];
 
 app.use(
