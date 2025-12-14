@@ -57,6 +57,6 @@ export const cancelOrderController = expressAsyncHandler(async (req, res, next) 
   const { orderID, eventID } = req.params;
   if (!orderID) return next(new AppError("Order ID is required", 400));
   await cancelOrderService(orderID);
-  res.redirect(`${process.env.FRONTEND_URL}${eventID}`);
+  res.redirect(`${process.env.FRONTEND_URL}events/${eventID}`);
 });
 
