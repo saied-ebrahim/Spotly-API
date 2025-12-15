@@ -13,7 +13,7 @@ cron.schedule("*/1 * * * *", async () => {
 
 
 
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   try {
     const users = await userModel.find();
     users.forEach(async (user) => {
